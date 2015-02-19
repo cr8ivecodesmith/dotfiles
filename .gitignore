@@ -1,0 +1,7 @@
+projects/*
+sys/tmp/*
+*.swp
+*~
+*.py[co]
+__pycache__
+

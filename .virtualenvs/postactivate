@@ -1,0 +1,5 @@
+#!/bin/bash
+# This hook is sourced after every virtualenv is activated.
+
+# Manually manage how to indicate your active env
+PS1="$_OLD_VIRTUAL_PS1"
