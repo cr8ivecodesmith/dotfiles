@@ -58,10 +58,16 @@ map <C-H> <C-W>h<C-W>_
 map <C-L> <C-W>l<C-W>_
 " ##### END SPLIT SCREEN NAVIGATION (CTRL+hjkl)
 
-" #### TAB NAVIGATION
+" ##### TAB NAVIGATION
 nnoremap th :tabprev<CR>
 nnoremap tl :tabnext<CR>
 nnoremap tn :tabnew<CR>
 nnoremap tt :tabedit<CR>
 nnoremap td :tabclose<CR>
-" #### END TAB NAVIGATION
+" ##### END TAB NAVIGATION
+
+" ##### STATUS LINE SETTINGS
+set statusline=%F%m%r%h%w\ [format:%{&ff}]\ [source:%Y]\ [ascii:\%03.3b]\ [hex:\%02.2B]\ [pos:%04l,%04v][%p%%]\ [len:%L]
+set laststatus=2
+" ##### END STATUS LINE SETTINGS
+
