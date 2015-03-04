@@ -85,9 +85,9 @@ if [ -x /usr/bin/dircolors ]; then
 fi
 
 # some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
+alias ll='ls -alFh'
+alias la='ls -Ah'
+alias l='ls -CFh'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -102,6 +102,16 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+# Personal aliases
+# TODO: Move to a separate alias file
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias mkdir='mkdir -p'
+alias ..='cd ..'
+alias du='du -h'
+alias df='df -h'
+
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -113,6 +123,44 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# Bash color definitions
+# Color definitions (taken from Color Bash Prompt HowTo).
+# Some colors might look different of some terminals.
+
+# Normal Colors
+Black='\e[0;30m'        # Black
+Red='\e[0;31m'          # Red
+Green='\e[0;32m'        # Green
+Yellow='\e[0;33m'       # Yellow
+Blue='\e[0;34m'         # Blue
+Purple='\e[0;35m'       # Purple
+Cyan='\e[0;36m'         # Cyan
+White='\e[0;37m'        # White
+
+# Bold
+BBlack='\e[1;30m'       # Black
+BRed='\e[1;31m'         # Red
+BGreen='\e[1;32m'       # Green
+BYellow='\e[1;33m'      # Yellow
+BBlue='\e[1;34m'        # Blue
+BPurple='\e[1;35m'      # Purple
+BCyan='\e[1;36m'        # Cyan
+BWhite='\e[1;37m'       # White
+
+# Background
+On_Black='\e[40m'       # Black
+On_Red='\e[41m'         # Red
+On_Green='\e[42m'       # Green
+On_Yellow='\e[43m'      # Yellow
+On_Blue='\e[44m'        # Blue
+On_Purple='\e[45m'      # Purple
+On_Cyan='\e[46m'        # Cyan
+On_White='\e[47m'       # White
+
+NC="\e[m"               # Color Reset
+
+ALERT=${BWhite}${On_Red} # Bold White on red background
+
 # Load SSH Keys
 if [ -f ~/sys/bin/load_ssh_identities ]; then
     source ~/sys/bin/load_ssh_identities
@@ -120,21 +168,26 @@ fi
 
 # Custom prompt settings
 function get_env_status() {
+    # Adds a new prompt line to show active virtualenv and git branch
     git_status=$(__git_ps1 "%s")
     if [[ $VIRTUAL_ENV && ${VIRTUAL_ENV-_} && ${git_status-_} ]]
     then
          venv=`basename "$VIRTUAL_ENV"`
-         echo -e "\n» env:$venv » git:$git_status"
+         echo -e "\n${Yellow}» env:${NC} ${Blue}${venv}${NC} ${Yellow}» git:${NC} ${Blue}$git_status${NC}"
     elif [[ $VIRTUAL_ENV && ${VIRTUAL_ENV-_} ]]
     then
          venv=`basename "$VIRTUAL_ENV"`
-         echo -e "\n» env:$venv"
+         echo -e "\n${Yellow}» env:${NC} ${Blue}$venv${NC}"
     elif [[ ${git_status-_} ]]
     then
-         echo -e "\n» git:$git_status"
+         echo -e "\n${Yellow}» git:${NC} ${Blue}$git_status${NC}"
+    else
+        echo -e ""
     fi
 }
-export PS1='$(get_env_status "%s")\n[\D{%Y-%m-%d %H:%M:%S} \h] \w \n\u ➤ '
+export PS1='$(get_env_status "%s")
+\[\e[0;33m\][\D{%Y-%m-%d %H:%M:%S}]\[\e[m\] \[\e[0;35m\]\w\[\e[m\]
+\[\e[0;36m\][\u.\h] ➤\[\e[m\] '
 
 # Virtualenvwrapper configuration
 export WORKON_HOME=$HOME/.virtualenvs
