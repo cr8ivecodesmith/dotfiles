@@ -67,7 +67,7 @@ nnoremap td :tabclose<CR>
 " ##### END TAB NAVIGATION
 
 " ##### STATUS LINE SETTINGS
-set statusline=%F%m%r%h%w\ [eol:%{&ff}]\ [enc:%{&encoding}]\ [src:%Y]\ [ascii:\%03.3b]\ [hex:\%02.2B]\ [x:%04v,y:%04l][%p%%]\ [len:%L]
+set statusline=%F%m%r%h%w\ [eol:%{&ff}][enc:%{&encoding}][src:%Y]\ [ascii:\%03.3b][hex:\%02.2B]\ [x:%04v,y:%04l][%p%%][len:%L]
 set laststatus=2
 " ##### END STATUS LINE SETTINGS
 
