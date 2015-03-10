@@ -1,0 +1,5 @@
+#!/bin/bash
+
+google-drive-ocamlfuse -label talk ~/gdrive/talk
+google-drive-ocamlfuse -label lebrun.matt ~/gdrive/lebrun.matt
+
