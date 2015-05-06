@@ -1,9 +1,10 @@
 " ##### GENERAL SETTINGS
 syntax on
+set encoding=utf-8
 set showmode
 set number
 set linebreak
-set showbreak=+++ 
+set showbreak=+++
 set textwidth=100
 set showmatch
 set visualbell
