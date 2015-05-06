@@ -16,8 +16,9 @@ HISTCONTROL=ignoreboth
 shopt -s histappend
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
-HISTFILESIZE=2000
+HISTSIZE=50000
+# HISTFILESIZE=10000
+HISTFILE=$HOME/.bash_history
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -185,9 +186,13 @@ function get_env_status() {
         echo -e ""
     fi
 }
-export PS1='$(get_env_status "%s")
-\[\e[0;33m\][\D{%Y-%m-%d %H:%M:%S}]\[\e[m\] \[\e[0;35m\]\w\[\e[m\]
-\[\e[0;36m\][\u.\h] ➤\[\e[m\] '
+PROMPT_COMMAND='r0=$?;if [ -z "$NP" ]; then i0=0;s0="";while [ "$i0" -lt "${COLUMNS:-80}" ];do s0="-$s0";i0=$[$i0+1];done;builtin echo -ne "\n\E[1;30m\E(0$s0\E(B\E[0m"; [ $r0 == 0 ] && builtin echo -ne "\e[1A\e[32m\e(0✔\e(B\e[0m\e[1B" || builtin echo -ne "\e[1A\e[31m\e(0✘\e(B\e[0m\e[1B";else unset NP;fi;history -a'
+NP=0
+PS1='$(get_env_status "%s")
+\[\e[0;33m\][\D{%Y-%m-%d %H:%M:%S}]\[\e[m\]  \[\e[0;35m\]\w\[\e[m\]
+\[\e[0;36m\][\u.\h]\[\e[m\] \[\033(0\]➤\[\033(B\] '
+
+export PROMPT_COMMAND NP PS1
 
 # Virtualenvwrapper configuration
 export WORKON_HOME=$HOME/.virtualenvs
