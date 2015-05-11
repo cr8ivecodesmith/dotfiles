@@ -38,6 +38,17 @@ inoremap jj <ESC>
 " ##### END GENERAL SETTINGS
 
 " ##### UTILITY SETTINGS
+
+" Load pathogen if exists
+if !empty(glob(expand("~/.vim/autoload"))) && filereadable(expand("~/.vim/bundle"))
+
+    filetype off
+    call pathogen#infect()
+    call pathogen#helptags()
+    filetype plugin indent on
+
+endif
+
 " Auto-reload of .vimrc
 autocmd! bufwritepost ~/.vimrc source %
 
@@ -45,7 +56,7 @@ autocmd! bufwritepost ~/.vimrc source %
 set pastetoggle=<F2>
 
 " Map yanks to system clipboard
-set clipboard=unnamedplus
+" set clipboard=unnamedplus
 
 " ##### END UTILITY SETTINGS
 
