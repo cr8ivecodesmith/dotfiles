@@ -37,6 +37,18 @@ inoremap jj <ESC>
 
 " ##### END GENERAL SETTINGS
 
+" ##### UTILITY SETTINGS
+" Auto-reload of .vimrc
+autocmd! bufwritepost ~/.vimrc source %
+
+" Fix for pasting in insert mode
+set pastetoggle=<F2>
+
+" Map yanks to system clipboard
+set clipboard=unnamedplus
+
+" ##### END UTILITY SETTINGS
+
 " ##### LEADER SHORTCUTS SETTINGS
 " Set leader key to `,`
 let mapleader = ","
