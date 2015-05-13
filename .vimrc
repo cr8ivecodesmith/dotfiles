@@ -39,7 +39,7 @@ inoremap jj <ESC>
 
 " ##### UTILITY SETTINGS
 
-" Load pathogen if exists
+" Load pathogen and plugins if exists
 if !empty(glob(expand("~/.vim/autoload"))) && filereadable(expand("~/.vim/bundle"))
 
     filetype off
@@ -95,3 +95,9 @@ set statusline=%F%m%r%h%w\ [eol:%{&ff}][enc:%{&encoding}][src:%Y]\ [ascii:\%03.3
 set laststatus=2
 " ##### END STATUS LINE SETTINGS
 
+" ##### VIM GUI SETTINGS
+" Sets gui font as suggested in: http://stackoverflow.com/questions/3316244/set-gvim-font-in-vimrc-file
+if has("gui_running")
+    set guifont=DejaVu\ Sans\ Mono:h12
+endif
+" ##### VIM GUI SETTINGS
