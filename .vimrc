@@ -26,6 +26,8 @@ set colorcolumn=80,100
 hi ColorColumn ctermbg=lightcyan guibg=lightcyan
 set listchars=eol:¶,tab:——,trail:·,extends:>,precedes:<,nbsp:%
 set list
+set ff=unix
+set ffs=unix,dos,mac
 
 " Backups and swap management
 set backup
