@@ -62,6 +62,20 @@ set pastetoggle=<F2>
 
 " ##### END UTILITY SETTINGS
 
+" ##### FILE-TYPES SETTINGS
+
+" Kivy atlas file support
+au BufNewFile,BufRead *.atlas set filetype=json
+
+" Kivy kv file support
+au BufNewFile,BufRead *.kv set filetype=yaml
+
+" Kivy markdown support
+au BufNewFile,BufRead *.md set filetype=markdown
+au BufNewFile,BufRead *.mdown set filetype=markdown
+
+" ##### END FILE-TYPES SETTINGS
+
 " ##### LEADER SHORTCUTS SETTINGS
 " Set leader key to `,`
 let mapleader = ","
