@@ -60,6 +60,9 @@ set pastetoggle=<F2>
 " Map yanks to system clipboard
 " set clipboard=unnamedplus
 
+" Always switch to the current file's directory
+autocmd BufEnter * silent! lcd %:p:h
+
 " ##### END UTILITY SETTINGS
 
 " ##### FILE-TYPES SETTINGS
