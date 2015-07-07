@@ -186,11 +186,11 @@ function get_env_status() {
         echo -e ""
     fi
 }
-PROMPT_COMMAND='r0=$?;if [ -z "$NP" ]; then i0=0;s0="";while [ "$i0" -lt "${COLUMNS:-80}" ];do s0="–$s0";i0=$[$i0+1];done;builtin echo -ne "\n\E[0;34m\E(0$s0\E(B\E[0m"; [ $r0 == 0 ] && builtin echo -ne "\e[1A\e[32m\e(0✔\e(B\e[0m\e[1B" || builtin echo -ne "\e[1A\e[31m\e(0✘\e(B\e[0m\e[1B";else unset NP;fi;history -a'
+PROMPT_COMMAND='r0=$?;if [ -z "$NP" ]; then i0=0;s0="";while [ "$i0" -lt "${COLUMNS:-80}" ];do s0="-$s0";i0=$[$i0+1];done;builtin echo -ne "\n$s0\E(B\E[0m"; [ $r0 == 0 ] && builtin echo -ne "\e[1A\e[32m[ok]" || builtin echo -ne "\e[1A\e[31m[fail]";else unset NP;fi;history -a'
 NP=0
 PS1='$(get_env_status "%s")
 \[\e[0;33m\][\D{%Y-%m-%d %H:%M:%S}]\[\e[m\]  \[\e[0;35m\]\w\[\e[m\]
-\[\e[0;36m\][\u.\h] »\[\e[m\] '
+\[\e[0;36m\][\u.\h] >\[\e[m\] '
 
 export PROMPT_COMMAND NP PS1
 
