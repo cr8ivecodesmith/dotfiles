@@ -113,6 +113,7 @@ alias ..='cd ..'
 alias du='du -h'
 alias df='df -h'
 
+
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -122,7 +123,17 @@ if ! shopt -oq posix; then
   elif [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
   fi
+
+  # enable git completion if it exists
+  if [ -f ~/.git-completion.bash ]; then
+    source ~/.git-completion.bash
+  fi
+  if [ -f ~/.git-prompt.sh ]; then
+    source ~/.git-prompt.sh
+  fi
+
 fi
+
 
 # Bash color definitions
 # Color definitions (taken from Color Bash Prompt HowTo).
@@ -188,6 +199,7 @@ function get_env_status() {
 }
 PROMPT_COMMAND='r0=$?;if [ -z "$NP" ]; then i0=0;s0="";while [ "$i0" -lt "${COLUMNS:-80}" ];do s0="-$s0";i0=$[$i0+1];done;builtin echo -ne "\n$s0\E(B\E[0m"; [ $r0 == 0 ] && builtin echo -ne "\e[1A\e[32m[ok]" || builtin echo -ne "\e[1A\e[31m[fail]";else unset NP;fi;history -a'
 NP=0
+
 PS1='$(get_env_status "%s")
 \[\e[0;33m\][\D{%Y-%m-%d %H:%M:%S}]\[\e[m\]  \[\e[0;35m\]\w\[\e[m\]
 \[\e[0;36m\][\u.\h] >\[\e[m\] '
@@ -197,4 +209,15 @@ export PROMPT_COMMAND NP PS1
 # Virtualenvwrapper configuration
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/projects
-source /usr/local/bin/virtualenvwrapper.sh
+
+if [ -f /usr/bin/virtualenvwrapper.sh ]; then
+  export VIRTUALENVWRAPPER_SCRIPT=/usr/bin/virtualenvwrapper.sh
+elif [ -f /usr/local/bin/virtualenvwrapper.sh ]; then
+  export VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh
+fi
+
+if [ -f /usr/bin/virtualenvwrapper_lazy.sh ]; then
+  source /usr/bin/virtualenvwrapper_lazy.sh
+elif [ -f /usr/local/bin/virtualenvwrapper_lazy.sh ]; then
+  source /usr/local/bin/virtualenvwrapper_lazy.sh
+fi
