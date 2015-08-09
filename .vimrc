@@ -1,5 +1,12 @@
 " ##### GENERAL SETTINGS
 syntax on
+colorscheme solarized
+if has('gui_running')
+    set background=light
+else
+    set background=dark
+endif
+
 set encoding=utf-8
 set showmode
 set number
