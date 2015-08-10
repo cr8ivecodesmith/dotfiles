@@ -1,11 +1,5 @@
 " ##### GENERAL SETTINGS
 syntax on
-colorscheme solarized
-if has('gui_running')
-    set background=light
-else
-    set background=dark
-endif
 
 set encoding=utf-8
 set showmode
@@ -31,7 +25,7 @@ set backspace=indent,eol,start
 set cursorline
 set colorcolumn=80,100
 hi ColorColumn ctermbg=lightcyan guibg=lightcyan
-set listchars=eol:¶,tab:——,trail:·,extends:>,precedes:<,nbsp:%
+set listchars=eol:¬,tab:——,trail:·,extends:>,precedes:<,nbsp:%
 set list
 set ff=unix
 set ffs=unix,dos,mac
@@ -124,6 +118,8 @@ set laststatus=2
 " ##### VIM GUI SETTINGS
 " Sets gui font as suggested in: http://stackoverflow.com/questions/3316244/set-gvim-font-in-vimrc-file
 if has("gui_running")
-    set guifont=DejaVu\ Sans\ Mono:h12
+    colorscheme solarized
+    set guifont=Fixedsys\ Neo+:h14
+    set background=light
 endif
 " ##### VIM GUI SETTINGS
