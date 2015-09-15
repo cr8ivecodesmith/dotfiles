@@ -29,6 +29,7 @@ set listchars=eol:¬,tab:——,trail:·,extends:>,precedes:<,nbsp:%
 set list
 set ff=unix
 set ffs=unix,dos,mac
+set formatoptions-=tc
 
 " Backups and swap management
 set backup
