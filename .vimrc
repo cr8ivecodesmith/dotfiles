@@ -1,7 +1,8 @@
 " ##### GENERAL SETTINGS
 syntax on
-
+filetype plugin indent on
 set encoding=utf-8
+
 set showmode
 set number
 set linebreak
@@ -29,15 +30,17 @@ set listchars=eol:¬,tab:——,trail:·,extends:>,precedes:<,nbsp:%
 set list
 set ff=unix
 set ffs=unix,dos,mac
-set formatoptions-=tc
 
 " Backups and swap management
-set backup
-set backupdir=~/sys/tmp
-set dir=~/sys/tmp
+if !isdirectory(expand("~/sys/tmp"))
+    call mkdir(expand("~/sys/tmp"), "p")
+    set backup
+    set backupdir=~/sys/tmp
+    set dir=~/sys/tmp
+endif
 
-" Switch ESC with `jj`
-inoremap jj <ESC>
+" Switch ESC with `jk`
+inoremap jk <ESC>
 
 " ##### END GENERAL SETTINGS
 
@@ -79,11 +82,14 @@ au BufNewFile,BufRead *.kv set filetype=yaml
 au BufNewFile,BufRead *.md set filetype=markdown
 au BufNewFile,BufRead *.mdown set filetype=markdown
 
+" Vagrantfile support
+au BufNewFile,BufRead Vagrantfile set filetype=ruby
+
 " ##### END FILE-TYPES SETTINGS
 
 " ##### LEADER SHORTCUTS SETTINGS
 " Set leader key to `,`
-let mapleader = ","
+let mapleader = "\<space>"
 
 " Save the file as sudo then reload it manually with `:edit!`
 noremap <Leader>W :silent w !sudo tee % > /dev/null
