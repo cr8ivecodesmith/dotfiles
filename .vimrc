@@ -34,10 +34,10 @@ set ffs=unix,dos,mac
 " Backups and swap management
 if !isdirectory(expand("~/sys/tmp"))
     call mkdir(expand("~/sys/tmp"), "p")
-    set backup
-    set backupdir=~/sys/tmp
-    set dir=~/sys/tmp
 endif
+set backup
+set backupdir=~/sys/tmp
+set dir=~/sys/tmp
 
 " Switch ESC with `jk`
 inoremap jk <ESC>
