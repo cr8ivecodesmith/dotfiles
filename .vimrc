@@ -1,8 +1,6 @@
 " ##### GENERAL SETTINGS
 syntax on
 filetype plugin indent on
-set encoding=utf-8
-
 set showmode
 set number
 set linebreak
@@ -129,8 +127,8 @@ set laststatus=2
 
 " ##### VIM THEME SETTINGS
 " Sets gui font as suggested in: http://stackoverflow.com/questions/3316244/set-gvim-font-in-vimrc-file
-colorscheme solarized
 if has("gui_running")
+    colorscheme solarized
     set background=light
     set guifont=Fixedsys\ Neo+:h14
 else
