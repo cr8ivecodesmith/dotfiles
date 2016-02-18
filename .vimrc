@@ -100,6 +100,11 @@ noremap <Leader>c :noh
 " Reload vimrc
 noremap <Leader>R :so ~/.vimrc
 
+" Set background to light or dark
+noremap <Leader>bd :set background=dark
+noremap <Leader>bl :set background=light
+
+
 " ##### END LEADER SHORTCUTS SETTINGS
 
 " ##### SPLIT SCREEN NAVIGATION (CTRL+hjkl)
@@ -122,11 +127,13 @@ set statusline=%F%m%r%h%w\ [eol:%{&ff}][enc:%{&encoding}][src:%Y]\ [ascii:\%03.3
 set laststatus=2
 " ##### END STATUS LINE SETTINGS
 
-" ##### VIM GUI SETTINGS
+" ##### VIM THEME SETTINGS
 " Sets gui font as suggested in: http://stackoverflow.com/questions/3316244/set-gvim-font-in-vimrc-file
+colorscheme solarized
 if has("gui_running")
-    colorscheme solarized
-    set guifont=Fixedsys\ Neo+:h14
     set background=light
+    set guifont=Fixedsys\ Neo+:h14
+else
+    set background=dark
 endif
 " ##### VIM GUI SETTINGS
