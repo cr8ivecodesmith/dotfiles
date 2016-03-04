@@ -127,11 +127,11 @@ set laststatus=2
 
 " ##### VIM THEME SETTINGS
 " Sets gui font as suggested in: http://stackoverflow.com/questions/3316244/set-gvim-font-in-vimrc-file
+set t_Co=16
+set background=light
 if has("gui_running")
     colorscheme solarized
     set background=light
     set guifont=Fixedsys\ Neo+:h14
-else
-    set background=dark
 endif
 " ##### VIM GUI SETTINGS

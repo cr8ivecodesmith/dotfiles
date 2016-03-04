@@ -221,3 +221,6 @@ if [ -f /usr/bin/virtualenvwrapper_lazy.sh ]; then
 elif [ -f /usr/local/bin/virtualenvwrapper_lazy.sh ]; then
   source /usr/local/bin/virtualenvwrapper_lazy.sh
 fi
+
+# Set solorized dir_colors
+eval `dircolors ~/.dir_colors`
