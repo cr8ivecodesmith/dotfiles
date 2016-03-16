@@ -1,0 +1,62 @@
+#!/bin/bash
+# INSTRUCTIONS:
+# 1. Initialize and configure all Grives
+# 2. Update SETTINGS section
+# 3. Put the ff. command in a crontab to run this script every `x` mins:
+#    */x * * * * /home/matt/sys/bin/sync-grives
+#
+#    i.e. Every 5mins
+#    */5 * * * * /home/matt/sys/bin/sync-grives
+
+
+##### SETTINGS
+export SYNCGRIVE_LOCK=$HOME/sys/bin/sync-grives.lock
+export SYNCGRIVE_LOG=$HOME/sys/bin/sync-grives.log
+
+# Add all drives here
+declare -a SYNCGRIVE_DRIVES=(
+    "$HOME/Grive/lebrun.matt" 
+)
+##### END SETTINGS
+
+
+log() {
+    local msg=$1
+    local level=$2
+    echo [`date +'%Y-%m-%d %H:%M:%S'`] $level - $msg | tee -a $SYNCGRIVE_LOG
+}
+
+
+clear_process() {
+    rm -f $SYNCGRIVE_LOCK
+}
+
+
+main() {
+    touch $SYNCGRIVE_LOCK
+
+    for i in ${SYNCGRIVE_DRIVES[@]}
+    do
+        local sync_log=$i/grive.log
+        log 'syncing drive '$i 'INFO'
+        log 'log file created at '$sync_log 'INFO'
+        cd $i
+        grive -l $sync_log
+        log 'sync complete for drive '$i 'INFO'
+    done
+
+    clear_process;
+}
+
+
+##### MAIN
+if [ -f $SYNCGRIVE_LOCK ]; then
+    ps -e | grep "grive$" || {
+        log 'removing stale lock file' 'WARN'
+        clear_process;
+        main;
+    }
+else
+    main;
+fi
+##### END MAIN

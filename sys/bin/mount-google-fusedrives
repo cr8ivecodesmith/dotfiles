@@ -1,0 +1,3 @@
+#!/bin/bash
+
+google-drive-ocamlfuse -label lebrun.matt ~/Documents/Drives/lebrun.matt/
