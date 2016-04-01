@@ -1,0 +1,19 @@
+{
+    "players": [
+        {
+            "name": "Larry Bird",
+            "jersey": "33",
+            "team": "Boston Celtics"
+        },
+        {
+            "name": "Michael Jordan",
+            "jersey": "23",
+            "team": "Chicago Bulls"
+        },
+        {
+            "name": "Magic Johnson",
+            "jersey": "32",
+            "team": "Los Angeles Lakers"
+        }
+    ]
+}
