@@ -1,0 +1,9 @@
+{
+    "players": [
+        {
+            "name": "Larry Bird",
+            "jersey": "33",
+            "team": "Boston Celtics"
+        }
+    ]
+}
