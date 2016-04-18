@@ -80,8 +80,9 @@ au BufNewFile,BufRead *.kv set filetype=yaml
 au BufNewFile,BufRead *.md set filetype=markdown
 au BufNewFile,BufRead *.mdown set filetype=markdown
 
-" Vagrantfile support
+" Vagrantfile and Dockerfile support
 au BufNewFile,BufRead Vagrantfile set filetype=ruby
+au BufNewFile,BufRead Dockerfile set filetype=ruby
 
 " ##### END FILE-TYPES SETTINGS
 
