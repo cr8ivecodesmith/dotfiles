@@ -48,8 +48,8 @@ inoremap jk <ESC>
 if !empty(glob(expand("~/.vim/autoload"))) && filereadable(expand("~/.vim/bundle"))
 
     filetype off
-    call pathogen#infect()
-    call pathogen#helptags()
+    execute pathogen#infect()
+    execute pathogen#helptags()
     filetype plugin indent on
 
 endif
@@ -81,8 +81,8 @@ au BufNewFile,BufRead *.md set filetype=markdown
 au BufNewFile,BufRead *.mdown set filetype=markdown
 
 " Vagrantfile and Dockerfile support
-au BufNewFile,BufRead Vagrantfile set filetype=ruby
-au BufNewFile,BufRead Dockerfile set filetype=ruby
+au BufNewFile,BufRead Vagrantfile* set filetype=ruby
+au BufNewFile,BufRead Dockerfile* set filetype=ruby
 
 " ##### END FILE-TYPES SETTINGS
 
