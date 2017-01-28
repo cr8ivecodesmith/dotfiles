@@ -182,15 +182,15 @@ fi
 function get_env_status() {
     # Adds a new prompt line to show active virtualenv and git branch
     git_status=$(__git_ps1 "%s")
-    if [[ $VIRTUAL_ENV && ${VIRTUAL_ENV-_} && ${git_status-_} ]]
-    then
-         venv=`basename "$VIRTUAL_ENV"`
-         echo -e "\n${Yellow}» env:${NC} ${Blue}${venv}${NC} ${Yellow}» git:${NC} ${Blue}$git_status${NC}"
-    elif [[ $VIRTUAL_ENV && ${VIRTUAL_ENV-_} ]]
-    then
-         venv=`basename "$VIRTUAL_ENV"`
-         echo -e "\n${Yellow}» env:${NC} ${Blue}$venv${NC}"
-    elif [[ ${git_status-_} ]]
+    #if [[ $VIRTUAL_ENV && ${VIRTUAL_ENV-_} && ${git_status-_} ]]
+    #then
+    #     venv=`basename "$VIRTUAL_ENV"`
+    #     echo -e "\n${Yellow}» env:${NC} ${Blue}${venv}${NC} ${Yellow}» git:${NC} ${Blue}$git_status${NC}"
+    #elif [[ $VIRTUAL_ENV && ${VIRTUAL_ENV-_} ]]
+    #then
+    #     venv=`basename "$VIRTUAL_ENV"`
+    #     echo -e "\n${Yellow}» env:${NC} ${Blue}$venv${NC}"
+    if [[ ${git_status-_} ]]
     then
          echo -e "\n${Yellow}» git:${NC} ${Blue}$git_status${NC}"
     else
