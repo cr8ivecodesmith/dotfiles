@@ -201,8 +201,8 @@ PROMPT_COMMAND='r0=$?;if [ -z "$NP" ]; then i0=0;s0="";while [ "$i0" -lt "${COLU
 NP=0
 
 PS1='$(get_env_status "%s")
-\[\e[0;33m\][\D{%Y-%m-%d %H:%M:%S}]\[\e[m\]  \[\e[0;35m\]\w\[\e[m\]
-\[\e[0;36m\][\u.\h] >\[\e[m\] '
+\[\e[0;33m\][\D{%Y-%m-%d %H:%M}]\[\e[m\]  \[\e[0;35m\]\w\[\e[m\]
+\[\e[0;36m\]\u.\h\[\e[m\]:\[\e[0;35m\]\W\[\e[m\] \[\e[0;36m\]>\[\e[m\] '
 
 export PROMPT_COMMAND NP PS1
 
@@ -224,3 +224,24 @@ fi
 
 # Set solorized dir_colors
 eval `dircolors ~/.dir_colors`
+
+
+# Android SDK
+export ANDROID_HOME=/home/matt/Android/Sdk
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export PATH=${PATH}:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${JAVA_HOME}/bin
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f /mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc ]; then
+  source '/mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc'
+fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f /mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc ]; then
+  source '/mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc'
+fi
+
+test -s "$HOME/.kiex/scripts/kiex" && source "$HOME/.kiex/scripts/kiex"
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"

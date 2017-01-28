@@ -43,13 +43,14 @@ inoremap jk <ESC>
 " ##### END GENERAL SETTINGS
 
 " ##### UTILITY SETTINGS
-
 " Load pathogen and plugins if exists
-if !empty(glob(expand("~/.vim/autoload"))) && filereadable(expand("~/.vim/bundle"))
+if !empty(glob(expand("~/.vim/autoload"))) && !empty(glob(expand("~/.vim/bundle")))
 
     filetype off
     execute pathogen#infect()
     execute pathogen#helptags()
+
+    syntax on
     filetype plugin indent on
 
 endif
@@ -82,7 +83,6 @@ au BufNewFile,BufRead *.mdown set filetype=markdown
 
 " Vagrantfile and Dockerfile support
 au BufNewFile,BufRead Vagrantfile* set filetype=ruby
-au BufNewFile,BufRead Dockerfile* set filetype=ruby
 
 " ##### END FILE-TYPES SETTINGS
 
@@ -136,3 +136,15 @@ if has("gui_running")
     set guifont=Fixedsys\ Neo+:h14
 endif
 " ##### VIM GUI SETTINGS
+
+
+" ##### CTRLP PLUGIN SETTINGS
+if !empty(glob(expand("~/.vim/bundle/ctrlp-vim")))
+    " Set keymapping
+    let g:ctrlp_map = '<c-p>'
+    let g:ctrlp_cmd = 'CtrlP'
+
+    " Ignore files in .gitignore
+    let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+endif
+" ##### END CTRLP PLUGIN SETTINGS
