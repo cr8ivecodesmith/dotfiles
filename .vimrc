@@ -122,7 +122,7 @@ nnoremap td :tabclose<CR>
 " ##### END TAB NAVIGATION
 
 " ##### STATUS LINE SETTINGS
-set statusline=%F%m%r%h%w\ [eol:%{&ff}][enc:%{&encoding}][src:%Y]\ [ascii:\%03.3b][hex:\%02.2B]\ [x:%04v,y:%04l][%p%%][len:%L]
+" set statusline=%F%m%r%h%w\ [eol:%{&ff}][enc:%{&encoding}][src:%Y]\ [ascii:\%03.3b][hex:\%02.2B]\ [x:%04v,y:%04l][%p%%][len:%L]
 set laststatus=2
 " ##### END STATUS LINE SETTINGS
 
@@ -133,10 +133,15 @@ set background=light
 if has("gui_running")
     colorscheme solarized
     set background=light
-    set guifont=Fixedsys\ Neo+:h14
+    set guifont=Fixedsys\ Excelsior:h14
+    set noanti
+    set macligatures
 endif
 " ##### VIM GUI SETTINGS
 
+" ##### POWERLINE FONTS SETTINGS
+let g:airline_powerline_fonts = 1
+" ##### END POWERLINE FONTS SETTINGS
 
 " ##### CTRLP PLUGIN SETTINGS
 if !empty(glob(expand("~/.vim/bundle/ctrlp-vim")))
@@ -148,3 +153,16 @@ if !empty(glob(expand("~/.vim/bundle/ctrlp-vim")))
     let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 endif
 " ##### END CTRLP PLUGIN SETTINGS
+
+" ##### PROMPTLINE PLUGIN SETTINGS
+" if !empty(glob(expand("~/.vim/bundle/promptline-vim")))
+    let g:promptline_preset = {
+        \'a': [ promptline#slices#host() ],
+        \'b': [ promptline#slices#user() ],
+        \'c': [ promptline#slices#cwd() ],
+        \'y': [ promptline#slices#python_virtualenv() ],
+        \'z': [ promptline#slices#vcs_branch() ],
+        \'warn': [ promptline#slices#last_exit_code() ]}
+    let g:promptline_theme = 'airline'
+" endif
+" ##### END PROMPTLINE PLUGIN SETTINGS
