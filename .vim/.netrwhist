@@ -1,2 +1,9 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =0
+let g:netrw_dirhist_cnt =7
+let g:netrw_dirhist_1='/home/matt/Public/projects/munting-kislap/spoof'
+let g:netrw_dirhist_2='/home/matt/Public/projects/munting-kislap/spoof/fake_login'
+let g:netrw_dirhist_3='/home/matt/Public/projects/munting-kislap/spoof'
+let g:netrw_dirhist_4='/home/matt/Public/projects/munting-kislap/dns_server/dns2proxy'
+let g:netrw_dirhist_5='/home/matt/Public/projects/munting-kislap'
+let g:netrw_dirhist_6='/home/matt/Public/projects/munting-kislap/dns_server'
+let g:netrw_dirhist_7='/home/matt/Public/projects/munting-kislap/dns_server/etc'

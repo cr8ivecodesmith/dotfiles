@@ -212,42 +212,22 @@ else
     export PROMPT_COMMAND NP PS1
 fi
 
-# Virtualenvwrapper configuration
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/projects
-
-if [ -f /usr/bin/virtualenvwrapper.sh ]; then
-  export VIRTUALENVWRAPPER_SCRIPT=/usr/bin/virtualenvwrapper.sh
-elif [ -f /usr/local/bin/virtualenvwrapper.sh ]; then
-  export VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh
-fi
-
-if [ -f /usr/bin/virtualenvwrapper_lazy.sh ]; then
-  source /usr/bin/virtualenvwrapper_lazy.sh
-elif [ -f /usr/local/bin/virtualenvwrapper_lazy.sh ]; then
-  source /usr/local/bin/virtualenvwrapper_lazy.sh
-fi
-
-# Set solorized dir_colors
-eval `dircolors ~/.dir_colors`
-
-
 # Android SDK
-export ANDROID_HOME=/home/matt/Android/Sdk
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-export PATH=${PATH}:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${JAVA_HOME}/bin
+#export ANDROID_HOME=/home/matt/Android/Sdk
+#export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+#export PATH=${PATH}:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${JAVA_HOME}/bin
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f /mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc ]; then
-  source '/mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc'
-fi
+#if [ -f /mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc ]; then
+#  source '/mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc'
+#fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f /mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc ]; then
-  source '/mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc'
-fi
+#if [ -f /mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc ]; then
+#  source '/mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc'
+#fi
 
-test -s "$HOME/.kiex/scripts/kiex" && source "$HOME/.kiex/scripts/kiex"
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
-export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+#test -s "$HOME/.kiex/scripts/kiex" && source "$HOME/.kiex/scripts/kiex"
+#export PATH="$HOME/.rbenv/bin:$PATH"
+#eval "$(rbenv init -)"
+#export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
