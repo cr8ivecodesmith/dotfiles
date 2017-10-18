@@ -1,7 +1,7 @@
 projects/*
 sys/tmp/*
+.vim/.netrwhist
 *.swp
 *~
 *.py[co]
 __pycache__
-

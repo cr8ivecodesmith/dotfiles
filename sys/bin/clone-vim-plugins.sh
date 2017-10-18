@@ -18,3 +18,7 @@ git clone https://github.com/airblade/vim-gitgutter.git \
     ${BUNDLE_DIR}/vim-gitgutter
 git clone https://github.com/ctrlpvim/ctrlp.vim.git \
     ${BUNDLE_DIR}/ctrlp-vim
+git clone https://github.com/davidhalter/jedi-vim.git \
+    ${BUNDLE_DIR}/jedi-vim
+git clone https://github.com/ervandew/supertab.git \
+    ${BUNDLE_DIR}/supertab
