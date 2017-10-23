@@ -22,3 +22,5 @@ git clone https://github.com/davidhalter/jedi-vim.git \
     ${BUNDLE_DIR}/jedi-vim
 git clone https://github.com/ervandew/supertab.git \
     ${BUNDLE_DIR}/supertab
+git clone https://github.com/nathanaelkane/vim-indent-guides.git \
+    ${BUNDLE_DIR}/vim-indent-guides

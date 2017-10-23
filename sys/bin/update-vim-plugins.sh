@@ -12,3 +12,4 @@ cd ${BUNDLE_DIR}/vim-gitgutter && git pull origin master
 cd ${BUNDLE_DIR}/ctrlp-vim && git pull origin master
 cd ${BUNDLE_DIR}/jedi-vim && git pull origin master
 cd ${BUNDLE_DIR}/supertab && git pull origin master
+cd ${BUNDLE_DIR}/vim-indent-guides && git pull origin master
