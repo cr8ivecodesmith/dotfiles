@@ -1,6 +1,7 @@
 projects/*
 sys/tmp/*
 .vim/.netrwhist
+.vim/view/
 *.swp
 *~
 *.py[co]
