@@ -101,7 +101,7 @@ noremap <Leader>W :silent w !sudo tee % > /dev/null
 noremap <Leader>c :noh<CR>
 
 " Reload vimrc
-noremap <Leader>R :so ~/.vimrc
+noremap <Leader>R :so ~/.vimrc<CR>
 
 " Set background to light or dark
 noremap <Leader>bd :set background=dark<CR>
