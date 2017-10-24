@@ -40,6 +40,10 @@ set dir=~/sys/tmp
 " Switch ESC with `jk`
 inoremap jk <ESC>
 
+" Saving and restoring views
+autocmd BufLeave *.* mkview
+autocmd BufEnter *.* silent loadview
+
 " ##### END GENERAL SETTINGS
 
 " ##### UTILITY SETTINGS
@@ -94,14 +98,20 @@ let mapleader = "\<space>"
 noremap <Leader>W :silent w !sudo tee % > /dev/null
 
 " Clear the last search highlights
-noremap <Leader>c :noh
+noremap <Leader>c :noh<CR>
 
 " Reload vimrc
 noremap <Leader>R :so ~/.vimrc
 
 " Set background to light or dark
-noremap <Leader>bd :set background=dark
-noremap <Leader>bl :set background=light
+noremap <Leader>bd :set background=dark<CR>
+noremap <Leader>bl :set background=light<CR>
+
+" Fold method shortcuts
+noremap <Leader>fi :set foldmethod=indent<CR>
+noremap <Leader>fs :set foldmethod=syntax<CR>
+noremap <Leader>fm :set foldmethod=manual<CR>
+noremap <Leader>fc :set foldmethod=manual<CR>zE
 
 
 " ##### END LEADER SHORTCUTS SETTINGS
