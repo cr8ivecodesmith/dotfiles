@@ -198,9 +198,9 @@ function get_env_status() {
     fi
 }
 
-if [ -f $HOME/.shell_prompt.sh ]; then
-    chmod +x $HOME/.shell_prompt.sh
-    source $HOME/.shell_prompt.sh
+if [ -f $HOME/.promptline.sh ]; then
+    chmod +x $HOME/.promptline.sh
+    source $HOME/.promptline.sh
 else
     PROMPT_COMMAND='r0=$?;if [ -z "$NP" ]; then i0=0;s0="";while [ "$i0" -lt "${COLUMNS:-80}" ];do s0="-$s0";i0=$[$i0+1];done;builtin echo -ne "\n$s0\E(B\E[0m"; [ $r0 == 0 ] && builtin echo -ne "\e[1A\e[32m[ok]" || builtin echo -ne "\e[1A\e[31m[fail]";else unset NP;fi;history -a'
     NP=0

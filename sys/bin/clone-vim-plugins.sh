@@ -12,6 +12,8 @@ git clone https://github.com/leafgarland/typescript-vim.git \
     ${BUNDLE_DIR}/typescript-vim
 git clone https://github.com/edkolev/promptline.vim.git \
     ${BUNDLE_DIR}/promptline-vim
+git clone https://github.com/edkolev/tmuxline.vim.git \
+    ${BUNDLE_DIR}/tmuxline-vim
 git clone https://github.com/vim-airline/vim-airline \
     ${BUNDLE_DIR}/vim-airline
 git clone https://github.com/airblade/vim-gitgutter.git \
