@@ -1,6 +1,7 @@
 projects/*
 sys/tmp/*
 .vim/.netrwhist
+.vim/bundle/
 .vim/view/
 *.swp
 *~
