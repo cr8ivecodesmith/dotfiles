@@ -213,21 +213,35 @@ else
 fi
 
 # Android SDK
-#export ANDROID_HOME=/home/matt/Android/Sdk
+#export ANDROID_HOME=$HOME/Android/Sdk
 #export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 #export PATH=${PATH}:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${JAVA_HOME}/bin
 
 # The next line updates PATH for the Google Cloud SDK.
-#if [ -f /mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc ]; then
-#  source '/mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc'
+#if [ -f $HOME/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc ]; then
+#  source '$HOME/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc'
 #fi
 
 # The next line enables shell command completion for gcloud.
-#if [ -f /mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc ]; then
-#  source '/mnt/vault/home/matt/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc'
+#if [ -f $HOME/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc ]; then
+#  source '$HOME/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc'
 #fi
 
 #test -s "$HOME/.kiex/scripts/kiex" && source "$HOME/.kiex/scripts/kiex"
 #export PATH="$HOME/.rbenv/bin:$PATH"
 #eval "$(rbenv init -)"
 #export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+
+
+##### pyenv configuration
+# Set PATH variables
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+
+# Enable pyenv autocompletion
+if command -v pyenv 1>/dev/null 2>&1;then
+    eval "$(pyenv init -)"
+
+    # Enable auto activation of pyenv virtualenvs
+    eval "$(pyenv virtualenv-init -)"
+fi
