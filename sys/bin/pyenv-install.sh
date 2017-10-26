@@ -1,9 +1,20 @@
 #!/bin/bash
 
 # pyenv and pyenv-virtualenv installer for bash
+# for Ubuntu-based systems
 #
 # Author: Matt Lebrun (matt@lebrun.org)
 
+echo "-> Installing python build requirements"
+sudo apt-get install -y \
+    libreadline-gplv2-dev \
+    libncursesw5-dev \
+    libssl-dev \
+    libsqlite3-dev \
+    tk-dev \
+    libgdbm-dev \
+    libc6-dev \
+    libbz2-dev
 
 echo "-> Installing pyenv"
 git clone https://github.com/pyenv/pyenv.git $HOME/.pyenv
