@@ -129,6 +129,9 @@ nnoremap tl :tabnext<CR>
 nnoremap tn :tabnew<CR>
 nnoremap tt :tabedit<CR>
 nnoremap td :tabclose<CR>
+
+nnoremap tL :tabmove +1<CR>
+nnoremap tH :tabmove -1<CR>
 " ##### END TAB NAVIGATION
 
 " ##### STATUS LINE SETTINGS
