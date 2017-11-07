@@ -233,7 +233,7 @@ fi
 #export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
 
 
-##### pyenv configuration
+##### pyenv config
 # Set PATH variables
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
@@ -245,3 +245,8 @@ if command -v pyenv 1>/dev/null 2>&1;then
     # Enable auto activation of pyenv virtualenvs
     eval "$(pyenv virtualenv-init -)"
 fi
+
+
+#### NPM config
+export NPM_PACKAGES="$HOME/.npm-packages"
+export PATH="$NPM_PACKAGES/bin:$PATH"
