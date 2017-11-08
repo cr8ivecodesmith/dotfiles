@@ -7,3 +7,5 @@ sys/tmp/*
 *~
 *.py[co]
 __pycache__
+
+.config/fish/fishd.pod

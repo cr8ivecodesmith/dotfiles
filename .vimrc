@@ -36,13 +36,14 @@ endif
 set backup
 set backupdir=~/sys/tmp
 set dir=~/sys/tmp
+set viewdir=~/sys/tmp
 
 " Switch ESC with `jk`
 inoremap jk <ESC>
 
 " Saving and restoring views
-autocmd BufLeave *.* mkview
-autocmd BufEnter *.* silent loadview
+" autocmd BufLeave *.* mkview
+" autocmd BufEnter *.* silent loadview
 
 " ##### END GENERAL SETTINGS
 
