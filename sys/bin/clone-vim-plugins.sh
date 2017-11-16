@@ -26,3 +26,14 @@ git clone https://github.com/ervandew/supertab.git \
     ${BUNDLE_DIR}/supertab
 git clone https://github.com/nathanaelkane/vim-indent-guides.git \
     ${BUNDLE_DIR}/vim-indent-guides
+
+##########################
+##### NEOVIM PLUGINS #####
+##########################
+NEOVIM_PLUGINS_DIR=~/.config/nvim
+if command -v nvim 1>/dev/null 2>&1;then
+    git clone --recursive https://github.com/Shougo/deoplete.nvim.git \
+        ${NEOVIM_PLUGINS_DIR}/deoplete.nvim
+    git clone --recursive https://github.com/zchee/deoplete-jedi.git \
+        ${NEOVIM_PLUGINS_DIR}/deoplete-jedi
+fi

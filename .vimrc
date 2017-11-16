@@ -22,7 +22,7 @@ set ruler
 set undolevels=1000
 set backspace=indent,eol,start
 set cursorline
-set colorcolumn=80,100
+set colorcolumn=80
 hi ColorColumn ctermbg=lightcyan guibg=lightcyan
 set listchars=eol:¬,tab:——,trail:·,extends:>,precedes:<,nbsp:%
 set list
@@ -30,13 +30,13 @@ set ff=unix
 set ffs=unix,dos,mac
 
 " Backups and swap management
+set backup
 if !isdirectory(expand("~/sys/tmp"))
     call mkdir(expand("~/sys/tmp"), "p")
 endif
-set backup
 set backupdir=~/sys/tmp
 set dir=~/sys/tmp
-set viewdir=~/sys/tmp
+" set viewdir=~/sys/tmp
 
 " Switch ESC with `jk`
 inoremap jk <ESC>
@@ -48,16 +48,21 @@ inoremap jk <ESC>
 " ##### END GENERAL SETTINGS
 
 " ##### UTILITY SETTINGS
-" Load pathogen and plugins if exists
-if !empty(glob(expand("~/.vim/autoload"))) && !empty(glob(expand("~/.vim/bundle")))
-
-    filetype off
-    execute pathogen#infect()
-    execute pathogen#helptags()
-
-    syntax on
-    filetype plugin indent on
-
+" Install vim-plug to get this working
+" https://github.com/junegunn/vim-plug
+if !empty(glob(expand("~/.vim/autoload")))
+    call plug#begin()
+        Plug 'tpope/vim-fugitive'
+        Plug 'honza/dockerfile.vim'
+        Plug 'leafgarland/typescript-vim'
+        Plug 'edkolev/promptline.vim'
+        Plug 'edkolev/tmuxline.vim'
+        Plug 'vim-airline/vim-airline'
+        Plug 'airblade/vim-gitgutter'
+        Plug 'ctrlpvim/ctrlp.vim'
+        Plug 'davidhalter/jedi-vim'
+        Plug 'ervandew/supertab'
+    call plug#end()
 endif
 
 " Auto-reload of .vimrc
@@ -154,11 +159,13 @@ endif
 " ##### VIM GUI SETTINGS
 
 " ##### POWERLINE FONTS SETTINGS
-let g:airline_powerline_fonts = 1
+if !empty(glob(expand("~/.vim/plugged/vim-arline")))
+    let g:airline_powerline_fonts = 1
+endif
 " ##### END POWERLINE FONTS SETTINGS
 
 " ##### CTRLP PLUGIN SETTINGS
-if !empty(glob(expand("~/.vim/bundle/ctrlp-vim")))
+if !empty(glob(expand("~/.vim/plugged/ctrlp.vim")))
     " Set keymapping
     let g:ctrlp_map = '<c-p>'
     let g:ctrlp_cmd = 'CtrlP'
@@ -176,7 +183,7 @@ endif
 " ##### END CTRLP PLUGIN SETTINGS
 
 " ##### PROMPTLINE PLUGIN SETTINGS
-" if !empty(glob(expand("~/.vim/bundle/promptline-vim")))
+if !empty(glob(expand("~/.vim/plugged/promptline.vim")))
     let g:promptline_preset = {
         \'a': [ promptline#slices#host() ],
         \'b': [ promptline#slices#user() ],
@@ -184,6 +191,8 @@ endif
         \'y': [ promptline#slices#python_virtualenv() ],
         \'z': [ promptline#slices#vcs_branch() ],
         \'warn': [ promptline#slices#last_exit_code() ]}
-    let g:promptline_theme = 'airline'
-" endif
+    if !empty(glob(expand("~/.vim/plugged/vim-arline")))
+        let g:promptline_theme = 'airline'
+    endif
+endif
 " ##### END PROMPTLINE PLUGIN SETTINGS

@@ -2,7 +2,13 @@ projects/*
 sys/tmp/*
 .vim/.netrwhist
 .vim/bundle/
+.vim/plugged/
 .vim/view/
+.local/share/nvim/shada/
+.local/share/nvim/site/
+.local/share/nvim/view/
+.config/nvim/plugged/
+.config/nvim/.netrwhist
 *.swp
 *~
 *.py[co]
