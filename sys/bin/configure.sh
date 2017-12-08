@@ -85,5 +85,11 @@ make_link $target $replacement
 #replacement=$PROJECT_DIR/.local/share/nvim
 #make_link $target $replacement
 
+echo "-> Installing Docker Container Removal Service"
+sudo cp $PROJECT_DIR/sys/bin/docker-remove-containers /usr/local/bin/
+sudo cp $PROJECT_DIR/systemd/service/docker-remove-containers.service \
+    /etc/systemd/service/
+sudo systemctl daemon-reload
+sudo systemctl enable docker-remove-containers
 
 echo "-> End"
