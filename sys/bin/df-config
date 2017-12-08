@@ -11,16 +11,30 @@ PROJECT_NAME=$(basename $PROJECT_DIR)
 
 
 function make_link() {
+    ### Creates symlinks with sane checks ###
     target=$1
     replacement=$2
 
-    if [ -f $target ];then
-        rm -rf $target
+    if [ -L $target ]
+    then
+        ln -sfn $replacement $target
+        echo "--> Link updated: $replacement -> $target"
+    elif [ -f $target ]
+    then
+        rm -fi $target
         echo "--> Link target removed: $target"
+        ln -sn $replacement $target
+        echo "--> Link created: $replacement -> $target"
+    elif [ -d $target ]
+    then
+        rm -rfi $target
+        echo "--> Link target removed: $target"
+        ln -sn $replacement $target
+        echo "--> Link created: $replacement -> $target"
+    else
+        ln -sn $replacement $target
+        echo "--> Link created: $replacement -> $target"
     fi
-
-    ln -s $replacement $target
-    echo "--> Link created: $replacement -> $target"
 }
 
 
@@ -28,17 +42,20 @@ echo "-> Configuring $PROJECT_NAME"
 echo "-> PROJECT_DIR: $PROJECT_DIR"
 
 
-#mkdir -p $HOME/sys/tmp
-#target=$HOME/sys/bin
-#replacement=$PROJECT_DIR/sys/bin
-#make_link $target $replacement
+echo "-> Create projects dir"
+mkdir -p $HOME/projects
 
 echo "-> Installing pyenv"
-if [ -f $HOME/.pyenv ];then
-    rm -rf $HOME/.pyenv
+if [ -d $HOME/.pyenv ];then
+    rm -rfi $HOME/.pyenv
 fi
 git clone https://github.com/pyenv/pyenv.git $HOME/.pyenv
 git clone https://github.com/pyenv/pyenv-virtualenv.git $HOME/.pyenv/plugins/pyenv-virtualenv
+
+mkdir -p $HOME/sys/tmp
+target=$HOME/sys/bin
+replacement=$PROJECT_DIR/sys/bin
+make_link $target $replacement
 
 mkdir -p $HOME/.npm-packages/bin
 target=$HOME/.npmrc
@@ -77,18 +94,18 @@ target=$HOME/.config/fish
 replacement=$PROJECT_DIR/.config/fish
 make_link $target $replacement
 
-#target=$HOME/.config/nvim
-#replacement=$PROJECT_DIR/.config/nvim
-#make_link $target $replacement
+target=$HOME/.config/nvim
+replacement=$PROJECT_DIR/.config/nvim
+make_link $target $replacement
 
-#target=$HOME/.local/share/nvim
-#replacement=$PROJECT_DIR/.local/share/nvim
-#make_link $target $replacement
+target=$HOME/.local/share/nvim
+replacement=$PROJECT_DIR/.local/share/nvim
+make_link $target $replacement
 
 echo "-> Installing Docker Container Removal Service"
-sudo cp $PROJECT_DIR/sys/bin/docker-remove-containers /usr/local/bin/
-sudo cp $PROJECT_DIR/systemd/service/docker-remove-containers.service \
-    /etc/systemd/service/
+sudo cp -i $PROJECT_DIR/sys/bin/docker-remove-containers /usr/local/bin/
+sudo cp -i $PROJECT_DIR/systemd/system/docker-remove-containers.service \
+    /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable docker-remove-containers
 
