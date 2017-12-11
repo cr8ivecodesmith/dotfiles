@@ -16,21 +16,34 @@ function fish_greeting
     end
 end
 
+
+##### JAVA config
+set jdk_ver "9"
+if test -d /usr/lib/jvm/java-$jdk_ver-openjdk-amd64/bin
+    set JAVA_HOME /usr/lib/jvm/java-$jdk_ver-openjdk-amd64
+    set PATH $JAVA_HOME/bin $PATH
+end
+
+
 #### pyenv config
 
 # Set PATH variables
-set PYENV_ROOT $HOME/.pyenv
-set PATH $PYENV_ROOT/bin $PATH
+if test -d $HOME/.pyenv/bin; and test -d $HOME/.pyenv/plugins/pyenv-virtualenv
+    set PYENV_ROOT $HOME/.pyenv
+    set PATH $PYENV_ROOT/bin $PATH
 
-# Enable pyenv autocompletion
-if type -q pyenv
-    status --is-interactive; and source (pyenv init -|psub)
+    # Enable pyenv autocompletion
+    if type -q pyenv
+        status --is-interactive; and source (pyenv init -|psub)
 
-    # Enable auto activation of pyenv virtualenvs
-    status --is-interactive; and source (pyenv virtualenv-init -|psub)
+        # Enable auto activation of pyenv virtualenvs
+        status --is-interactive; and source (pyenv virtualenv-init -|psub)
+    end
 end
 
 
 #### NPM config
-set NPM_PACKAGES $HOME/.npm-packages
-set PATH $NPM_PACKAGES/bin $PATH
+if test -d $HOME/.npm-packages
+    set NPM_PACKAGES $HOME/.npm-packages
+    set PATH $NPM_PACKAGES/bin $PATH
+end

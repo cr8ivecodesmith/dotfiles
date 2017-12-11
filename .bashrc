@@ -212,11 +212,21 @@ else
     export PROMPT_COMMAND NP PS1
 fi
 
-# Android SDK
-#export ANDROID_HOME=$HOME/Android/Sdk
-#export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-#export PATH=${PATH}:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${JAVA_HOME}/bin
 
+##### JAVA config
+jdk_ver="9"
+if [ -d /usr/lib/jvm/java-$jdk_ver-openjdk-amd64/bin ]; then
+    export JAVA_HOME=/usr/lib/jvm/java-$jdk_ver-openjdk-amd64
+    export PATH=$JAVA_HOME/bin:$PATH
+fi
+
+
+##### Android SDK config
+#export ANDROID_HOME=$HOME/Android/Sdk
+#export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH
+
+
+##### Google Cloud SDK config
 # The next line updates PATH for the Google Cloud SDK.
 #if [ -f $HOME/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc ]; then
 #  source '$HOME/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc'
@@ -227,6 +237,8 @@ fi
 #  source '$HOME/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc'
 #fi
 
+
+##### Elixir config
 #test -s "$HOME/.kiex/scripts/kiex" && source "$HOME/.kiex/scripts/kiex"
 #export PATH="$HOME/.rbenv/bin:$PATH"
 #eval "$(rbenv init -)"
@@ -235,18 +247,21 @@ fi
 
 ##### pyenv config
 # Set PATH variables
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
+if [ -d $HOME/.pyenv/bin && -d $HOME/.pyenv/plugins/pyenv-virtualenv ]; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
 
-# Enable pyenv autocompletion
-if command -v pyenv 1>/dev/null 2>&1;then
-    eval "$(pyenv init -)"
+    # Enable pyenv autocompletion
+    if command -v pyenv 1>/dev/null 2>&1;then
+        eval "$(pyenv init -)"
 
-    # Enable auto activation of pyenv virtualenvs
-    eval "$(pyenv virtualenv-init -)"
+        # Enable auto activation of pyenv virtualenvs
+        eval "$(pyenv virtualenv-init -)"
+    fi
 fi
 
-
 #### NPM config
-export NPM_PACKAGES="$HOME/.npm-packages"
-export PATH="$NPM_PACKAGES/bin:$PATH"
+if [ -d $HOME/.npm-packages/bin ]; then
+    export NPM_PACKAGES="$HOME/.npm-packages"
+    export PATH="$NPM_PACKAGES/bin:$PATH"
+fi
