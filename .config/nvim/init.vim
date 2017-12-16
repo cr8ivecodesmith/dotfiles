@@ -33,14 +33,6 @@ set list
 set ff=unix
 set ffs=unix,dos,mac
 
-" Backups and swap management
-set backup
-if !isdirectory(expand("~/sys/tmp"))
-    call mkdir(expand("~/sys/tmp"), "p")
-endif
-set backupdir=~/sys/tmp
-set dir=~/sys/tmp
-
 " Switch ESC with `jk`
 inoremap jk <ESC>
 
@@ -49,6 +41,55 @@ inoremap jk <ESC>
 " autocmd BufEnter *.* silent loadview
 
 " ##### END GENERAL SETTINGS
+
+
+" ##### BACKUP AND SWAP SETTINGS
+let g:_backup_home = $HOME . "/sys/src/backups/"
+let g:_swap_home = $HOME . "/sys/src/swap/"
+
+if !isdirectory(g:_backup_home)
+    call mkdir(g:_backup_home, "p")
+endif
+
+if !isdirectory(g:_swap_home)
+    call mkdir(g:_swap_home, "p")
+endif
+
+fun WriteBackup()
+    " Write a backup file per day, per minute
+    " following the file directory structure
+    let g:_script_path = expand("%:p:h")
+    let g:_backup_path = g:_backup_home . g:_script_path
+    if !isdirectory(g:_backup_path)
+        call mkdir(g:_backup_path, "p")
+    endif
+    let &bdir = g:_backup_path
+    let &bex = "-" . strftime("%Y%m%d%H%M")
+
+endfun
+
+fun WriteSwap()
+    " Write a swap file
+    " following the file directory structure
+    let g:_script_path = expand("%:p:h")
+    let g:_swap_path = g:_swap_home . g:_script_path
+    if !isdirectory(g:_swap_path)
+        call mkdir(g:_swap_path, "p")
+    endif
+    let &dir = g:_swap_path
+endfun
+
+" Enable backup and swap
+set backup
+set writebackup
+set swapfile
+
+" Hook commands to the the pre-write event for all files
+au BufWritePre * call WriteBackup()
+au BufWritePre * call WriteSwap()
+
+" ##### END BACKUP AND SWAP SETTINGS
+
 
 " ##### UTILITY SETTINGS
 " Install vim-plug to get this working
