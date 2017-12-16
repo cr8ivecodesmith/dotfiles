@@ -18,9 +18,8 @@ end
 
 
 ##### JAVA config
-set jdk_ver "9"
-if test -d /usr/lib/jvm/java-$jdk_ver-openjdk-amd64/bin
-    set JAVA_HOME /usr/lib/jvm/java-$jdk_ver-openjdk-amd64
+if test -d /usr/lib/jvm/java-8-openjdk-amd64/bin
+    set JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
     set PATH $JAVA_HOME/bin $PATH
 end
 

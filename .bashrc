@@ -214,7 +214,7 @@ fi
 
 
 ##### JAVA config
-jdk_ver="9"
+jdk_ver="8"
 if [ -d /usr/lib/jvm/java-$jdk_ver-openjdk-amd64/bin ]; then
     export JAVA_HOME=/usr/lib/jvm/java-$jdk_ver-openjdk-amd64
     export PATH=$JAVA_HOME/bin:$PATH
