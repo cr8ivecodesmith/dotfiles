@@ -35,29 +35,32 @@ def main():
         'Remove docker containers.'
     )
     parser.add_argument(
-        'action',
+        '--list', '-l',
         help=(
-            'Perform action [delete] or [list].'
+            'List only. Do not delete containers.'
         ),
+        action='store_true',
+        dest='LIST_ONLY'
     )
     parser.add_argument(
         '--id',
         help=(
-            'Pass ID filter.'
+            'Filter by container\'s ID.'
         ),
         dest='ID_FILTER',
     )
     parser.add_argument(
         '--name',
         help=(
-            'Pass Name filter.'
+            'Filter by container\'s name.'
         ),
         dest='NAME_FILTER',
     )
     parser.add_argument(
         '--status',
         help=(
-            'Pass Status filter.'
+            'Filter by one of created, restarting, running, removing, paused, '
+            'exited, or dead'
         ),
         dest='STATUS_FILTER',
     )
@@ -69,9 +72,9 @@ def main():
         'status': args.STATUS_FILTER,
     }
 
-    if args.action.strip().lower() == 'list':
+    if args.LIST_ONLY:
         list_containers(filter_args=filter_args)
-    elif args.action.strip().lower() == 'delete':
+    else:
         list_cmd = list_containers(
             filter_args=filter_args,
             id_only=True,
