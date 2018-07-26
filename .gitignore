@@ -1,5 +1,6 @@
 projects/*
 sys/tmp/*
+sys/src
 .vim/.netrwhist
 .vim/bundle/
 .vim/plugged/
@@ -14,4 +15,4 @@ sys/tmp/*
 *.py[co]
 __pycache__
 
-.config/fish/fishd.pod
+.config/fish/fishd.*
