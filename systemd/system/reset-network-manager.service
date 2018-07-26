@@ -1,0 +1,11 @@
+[Unit]
+Description=Reset Network Manager On Resume
+After=suspend.target
+
+[Service]
+User=root
+Type=oneshot
+ExecStart=/usr/sbin/service network-manager restart
+
+[Install]
+WantedBy=suspend.target
