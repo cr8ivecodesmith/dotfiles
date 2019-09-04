@@ -33,12 +33,30 @@ set list
 set ff=unix
 set ffs=unix,dos,mac
 
+" Code folding defaults
+set foldmethod=syntax
+set foldlevelstart=1
+let javaScript_fold=1
+let xml_syntax_folding=1
+let sh_fold_enabled=1
+
 " Switch ESC with `jk`
 inoremap jk <ESC>
 
 " Saving and restoring views
 " autocmd BufLeave *.* mkview
 " autocmd BufEnter *.* silent loadview
+
+" netrw customizations
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 4
+let g:netrw_altv = 1
+let g:netrw_winsize = 25
+" augroup ProjectDrawer
+"   autocmd!
+"   autocmd VimEnter * :Vexplore
+" augroup END
 
 " ##### END GENERAL SETTINGS
 
@@ -108,6 +126,8 @@ if !empty(glob(expand("~/.local/share/nvim/site/autoload")))
         Plug 'ervandew/supertab'
         Plug 'Shougo/deoplete.nvim'
         Plug 'zchee/deoplete-jedi'
+        Plug 'tmux-plugins/vim-tmux-focus-events'
+        Plug 'python-mode/python-mode', { 'branch': 'develop' }
     call plug#end()
 endif
 
@@ -145,12 +165,16 @@ let mapleader = "\<space>"
 
 " Save the file as sudo then reload it manually with `:edit!`
 noremap <Leader>W :silent w !sudo tee % > /dev/null
+noremap <Leader>w :silent w<CR>
 
 " Clear the last search highlights
 noremap <Leader>c :noh<CR>
 
 " Redraw the screen
 noremap <Leader>rr :redraw!<CR>:redrawstatus!<CR>
+
+" Reload the buffer
+noremap <Leader>rb :e<CR>
 
 " Set background to light or dark
 noremap <Leader>bd :set background=dark<CR>
@@ -161,6 +185,15 @@ noremap <Leader>fi :set foldmethod=indent<CR>
 noremap <Leader>fs :set foldmethod=syntax<CR>
 noremap <Leader>fm :set foldmethod=manual<CR>
 noremap <Leader>fc :set foldmethod=manual<CR>zE
+
+" Netrw activation
+noremap <Leader>t :Vex<CR>
+
+" Show current directory
+noremap <Leader>p :pwd<CR>
+
+" Quit
+noremap <Leader>qq :q<CR>
 
 
 " ##### END LEADER SHORTCUTS SETTINGS
@@ -173,8 +206,8 @@ map <C-L> <C-W>l<C-W>_
 " ##### END SPLIT SCREEN NAVIGATION (CTRL+hjkl)
 
 " ##### TAB NAVIGATION
-nnoremap th :tabprev<CR>
-nnoremap tl :tabnext<CR>
+nnoremap th :tabprev<CR>:checktime<CR>
+nnoremap tl :tabnext<CR>:checktime<CR>
 nnoremap tn :tabnew<CR>
 nnoremap tt :tabedit<CR>
 nnoremap td :tabclose<CR>
@@ -248,3 +281,12 @@ if !empty(glob(expand("~/.config/nvim/plugged/jedi-vim")))
     let g:jedi#completions_enabled = 0
 endif
 " ##### END JEDI PLUGIN SETTINGS
+
+" ##### PYTHON-MODE PLUGIN SETTINGS
+let g:pymode_folding = 1
+" augroup unset_folding_in_insert_mode
+"     autocmd!
+"     autocmd InsertEnter *.py setlocal foldmethod=marker
+"     autocmd InsertLeave *.py setlocal foldmethod=expr
+" augroup END
+" ##### END PYTHON-MODE PLUGIN SETTINGS
