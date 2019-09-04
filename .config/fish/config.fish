@@ -12,7 +12,7 @@ function fish_greeting
     if type -q fortune
         fortune
     else
-        ""
+        echo ""
     end
 end
 
