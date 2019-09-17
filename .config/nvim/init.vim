@@ -128,6 +128,9 @@ if !empty(glob(expand("~/.local/share/nvim/site/autoload")))
         Plug 'zchee/deoplete-jedi'
         Plug 'tmux-plugins/vim-tmux-focus-events'
         Plug 'python-mode/python-mode', { 'branch': 'develop' }
+        Plug 'tmhedberg/SimpylFold'
+        Plug 'Konfekt/FastFold'
+        Plug 'zhimsel/vim-stay'
     call plug#end()
 endif
 
@@ -283,10 +286,20 @@ endif
 " ##### END JEDI PLUGIN SETTINGS
 
 " ##### PYTHON-MODE PLUGIN SETTINGS
-let g:pymode_folding = 1
-" augroup unset_folding_in_insert_mode
-"     autocmd!
-"     autocmd InsertEnter *.py setlocal foldmethod=marker
-"     autocmd InsertLeave *.py setlocal foldmethod=expr
-" augroup END
+let g:pymode_folding = 0
 " ##### END PYTHON-MODE PLUGIN SETTINGS
+
+" ##### SIMPYL-FOLD PLUGIN SETTINGS
+let g:SimpylFold_docstring_preview = 0
+let g:SimpylFold_fold_docstring = 1
+let g:SimpylFold_fold_import = 1
+" ##### END SIMPYL-FOLD PLUGIN SETTINGS
+
+" ##### FAST-FOLD PLUGIN SETTINGS
+nmap zuz <Plug>(FastFoldUpdate)
+let g:fastfold_savehook = 1
+" ##### END FAST-FOLD PLUGIN SETTINGS
+
+" ##### VIM-STAY PLUGIN SETTINGS
+set viewoptions=cursor,folds,slash,unix
+" ##### END VIM-STAY PLUGIN SETTINGS
