@@ -8,3 +8,5 @@
 [push]
     default = simple
 
+[merge]
+	tool = meld
