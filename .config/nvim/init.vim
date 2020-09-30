@@ -128,6 +128,7 @@ if !empty(glob(expand("~/.local/share/nvim/site/autoload")))
         Plug 'zchee/deoplete-jedi'
         Plug 'tmux-plugins/vim-tmux-focus-events'
         Plug 'python-mode/python-mode', { 'branch': 'develop' }
+        " Plug 'python-mode/python-mode', { 'branch': 'last-py2-support' }
         Plug 'tmhedberg/SimpylFold'
         Plug 'Konfekt/FastFold'
         Plug 'zhimsel/vim-stay'
