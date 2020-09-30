@@ -46,3 +46,13 @@ if test -d $HOME/.npm-packages
     set NPM_PACKAGES $HOME/.npm-packages
     set PATH $NPM_PACKAGES/bin $PATH
 end
+
+
+#### CLOUDSDK config
+
+
+#### CONDA config
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+eval /home/matt/anaconda3/bin/conda "shell.fish" "hook" $argv | source
+# <<< conda initialize <<<
