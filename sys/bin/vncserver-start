@@ -1,0 +1,4 @@
+#!/bin/bash
+
+vncserver-stop
+vncserver :1 -localhost -depth 32

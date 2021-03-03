@@ -17,6 +17,15 @@ function fish_greeting
 end
 
 
+##### Environment variables
+set -Ux TERM "xterm-256color"
+
+
+##### Aliases
+alias tmux="tmux -2"
+alias rmi="rm -i"
+
+
 ##### JAVA config
 if test -d /usr/lib/jvm/java-8-openjdk-amd64/bin
     set JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
@@ -49,10 +58,13 @@ end
 
 
 #### CLOUDSDK config
-
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/matt/Apps/google-cloud-sdk/path.fish.inc' ]; . '/home/matt/Apps/google-cloud-sdk/path.fish.inc'; end
 
 #### CONDA config
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-eval /home/matt/anaconda3/bin/conda "shell.fish" "hook" $argv | source
+if test -d /home/matt/anaconda3/bin
+    eval /home/matt/anaconda3/bin/conda "shell.fish" "hook" $argv | source
+end
 # <<< conda initialize <<<
