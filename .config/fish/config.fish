@@ -37,14 +37,12 @@ end
 
 # Set PATH variables
 if test -d $HOME/.pyenv/bin; and test -d $HOME/.pyenv/plugins/pyenv-virtualenv
-    set PYENV_ROOT $HOME/.pyenv
-    set PATH $PYENV_ROOT/bin $PATH
+    status is-login; and source (pyenv init --path |psub)
 
-    # Enable pyenv autocompletion
+    # Enable pyenv auto-completion / auto-activation
     if type -q pyenv
-        status --is-interactive; and source (pyenv init -|psub)
-
-        # Enable auto activation of pyenv virtualenvs
+        # Redirecting annoying warning echo to /dev/null
+        status --is-interactive; and source (pyenv init -|psub) 2>&1 1>/dev/null
         status --is-interactive; and source (pyenv virtualenv-init -|psub)
     end
 end
@@ -54,6 +52,15 @@ end
 if test -d $HOME/.npm-packages
     set NPM_PACKAGES $HOME/.npm-packages
     set PATH $NPM_PACKAGES/bin $PATH
+end
+
+
+
+#### DEVKIT Pro (3DS Homebrew)
+if test -d /opt/devkitpro
+    set DEVKITPRO /opt/devkitpro
+    set DEVKITARM $DEVKITPRO/devkitARM
+    set PATH $DEVKITARM/bin $PATH
 end
 
 
