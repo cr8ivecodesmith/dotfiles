@@ -272,6 +272,15 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+
+#### DEVKIT Pro (3DS Homebrew)
+if [ -d /opt/devkitpro ]; then
+    export DEVKITPRO=/opt/devkitpro
+    export DEVKITARM=$DEVKITPRO/devkitARM
+    export PATH=$PATH:$DEVKITARM/bin
+fi
+
+
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/home/matt/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
