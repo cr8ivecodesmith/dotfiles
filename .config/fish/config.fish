@@ -34,17 +34,10 @@ end
 
 
 #### pyenv config
-
-# Set PATH variables
-if test -d $HOME/.pyenv/bin; and test -d $HOME/.pyenv/plugins/pyenv-virtualenv
-    status is-login; and source (pyenv init --path |psub)
-
-    # Enable pyenv auto-completion / auto-activation
-    if type -q pyenv
-        # Redirecting annoying warning echo to /dev/null
-        status --is-interactive; and source (pyenv init -|psub) 2>&1 1>/dev/null
-        status --is-interactive; and source (pyenv virtualenv-init -|psub)
-    end
+if set -q PYENV_ROOT; and test -d $PYENV_ROOT; and test -d $PYENV_ROOT/plugins/pyenv-virtualenv
+    status is-login; and pyenv init --path | source
+    pyenv init - | source
+    status --is-interactive; and pyenv virtualenv-init - | source
 end
 
 
