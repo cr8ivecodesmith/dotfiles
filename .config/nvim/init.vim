@@ -199,6 +199,9 @@ noremap <Leader>p :pwd<CR>
 " Quit
 noremap <Leader>qq :q<CR>
 
+" Execute current Python file
+noremap <Leader>xP :!python %:p<CR>
+
 
 " ##### END LEADER SHORTCUTS SETTINGS
 
