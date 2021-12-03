@@ -122,16 +122,17 @@ if !empty(glob(expand("~/.local/share/nvim/site/autoload")))
         Plug 'vim-airline/vim-airline'
         Plug 'airblade/vim-gitgutter'
         Plug 'ctrlpvim/ctrlp.vim'
-        Plug 'davidhalter/jedi-vim'
+        " Plug 'davidhalter/jedi-vim'
         Plug 'ervandew/supertab'
-        Plug 'Shougo/deoplete.nvim'
-        Plug 'zchee/deoplete-jedi'
+        " Plug 'Shougo/deoplete.nvim'
+        " Plug 'zchee/deoplete-jedi'
         Plug 'tmux-plugins/vim-tmux-focus-events'
-        Plug 'python-mode/python-mode', { 'branch': 'develop' }
+        Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
         " Plug 'python-mode/python-mode', { 'branch': 'last-py2-support' }
         Plug 'tmhedberg/SimpylFold'
         Plug 'Konfekt/FastFold'
         Plug 'zhimsel/vim-stay'
+        Plug 'sirtaj/vim-openscad'
     call plug#end()
 endif
 
@@ -254,7 +255,7 @@ if !empty(glob(expand("~/.config/nvim/plugged/ctrlp.vim")))
         \ }
 
     " Ignore files in .gitignore
-    " let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+    let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 endif
 " ##### END CTRLP PLUGIN SETTINGS
 
@@ -274,6 +275,13 @@ if !empty(glob(expand("~/.config/nvim/plugged/promptline.vim")))
 endif
 " ##### END PROMPTLINE PLUGIN SETTINGS
 
+" ##### TMUXLINE PLUGIN SETTINGS
+if !empty(glob(expand("~/.config/nvim/plugged/tmuxline.vim")))
+    let g:tmuxline_theme = 'airline'
+    let g:tmuxline_preset = 'powerline'
+endif
+" ##### END TMUXLINE PLUGIN SETTINGS
+
 " ##### DEOPLETE PLUGIN SETTINGS
 if !empty(glob(expand("~/.config/nvim/plugged/deoplete.vim")))
     let g:deoplete#enable_at_startup = 1
@@ -290,20 +298,55 @@ endif
 " ##### END JEDI PLUGIN SETTINGS
 
 " ##### PYTHON-MODE PLUGIN SETTINGS
-let g:pymode_folding = 0
+if !empty(glob(expand("~/.config/nvim/plugged/python-mode")))
+    let g:pymode_folding = 0
+
+    let g:pymode_motion = 1
+
+    let g:pymode_doc = 1
+    let g:pymode_doc_bind = 'K'
+
+    let g:pymode_run = 1
+    let g:pymode_run_bind = '<leader>r'
+
+    let g:pymode_breakpoint = 1
+    let g:pymode_breakpoint_bind = '<leader>b'
+    let g:pymode_breakpoint_cmd = ''  " Empty for auto-detect
+
+    let g:pymode_lint = 1
+    let g:pymode_lint_ignore = ['E121', 'E123' , 'E126', 'E226', 'E24', 'E704', 'E402', 'E501', 'N806', 'N802', 'W503',]
+    " let g:pymode_lint_select = ['E501', 'W0011', 'W430']
+    let g:pymode_lint_options_mccabe = { 'complexity': 12 }
+
+    let g:pymode_rope = 1
+    let g:pymode_rope_completion = 1
+    let g:pymode_rope_complete_on_dot = 1
+    let g:pymode_rope_organize_imports_bind = '<C-c>ro'
+    let g:pymode_rope_show_doc_bind = '<C-c>d'
+    let g:pymode_rope_regenerate_on_write = 1
+    let g:pymode_rope_goto_definition_bind = '<C-c>g'
+    let g:pymode_rope_rename_bind = '<C-c>rr'
+    let g:pymode_rope_rename_module_bind = '<C-c>r1r'
+endif
 " ##### END PYTHON-MODE PLUGIN SETTINGS
 
 " ##### SIMPYL-FOLD PLUGIN SETTINGS
-let g:SimpylFold_docstring_preview = 0
-let g:SimpylFold_fold_docstring = 1
-let g:SimpylFold_fold_import = 1
+if !empty(glob(expand("~/.config/nvim/plugged/SimpylFold")))
+    let g:SimpylFold_docstring_preview = 0
+    let g:SimpylFold_fold_docstring = 1
+    let g:SimpylFold_fold_import = 1
+endif
 " ##### END SIMPYL-FOLD PLUGIN SETTINGS
 
 " ##### FAST-FOLD PLUGIN SETTINGS
-nmap zuz <Plug>(FastFoldUpdate)
-let g:fastfold_savehook = 1
+if !empty(glob(expand("~/.config/nvim/plugged/FastFold")))
+    nmap zuz <Plug>(FastFoldUpdate)
+    let g:fastfold_savehook = 1
+endif
 " ##### END FAST-FOLD PLUGIN SETTINGS
 
 " ##### VIM-STAY PLUGIN SETTINGS
-set viewoptions=cursor,folds,slash,unix
+if !empty(glob(expand("~/.config/nvim/plugged/vim-stay")))
+    set viewoptions=cursor,folds,slash,unix
+endif
 " ##### END VIM-STAY PLUGIN SETTINGS

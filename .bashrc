@@ -198,19 +198,19 @@ function get_env_status() {
     fi
 }
 
-if [ -f $HOME/.promptline.sh ]; then
-    chmod +x $HOME/.promptline.sh
-    source $HOME/.promptline.sh
-else
-    PROMPT_COMMAND='r0=$?;if [ -z "$NP" ]; then i0=0;s0="";while [ "$i0" -lt "${COLUMNS:-80}" ];do s0="-$s0";i0=$[$i0+1];done;builtin echo -ne "\n$s0\E(B\E[0m"; [ $r0 == 0 ] && builtin echo -ne "\e[1A\e[32m[ok]" || builtin echo -ne "\e[1A\e[31m[fail]";else unset NP;fi;history -a'
-    NP=0
-
-    PS1='$(get_env_status "%s")
-    \[\e[0;33m\][\D{%Y-%m-%d %H:%M}]\[\e[m\]  \[\e[0;35m\]\w\[\e[m\]
-    \[\e[0;36m\]\u.\h\[\e[m\]:\[\e[0;35m\]\W\[\e[m\] \[\e[0;36m\]>\[\e[m\] '
-
-    export PROMPT_COMMAND NP PS1
-fi
+# if [ -f $HOME/.promptline.sh ]; then
+#     chmod +x $HOME/.promptline.sh
+#     source $HOME/.promptline.sh
+# else
+#     PROMPT_COMMAND='r0=$?;if [ -z "$NP" ]; then i0=0;s0="";while [ "$i0" -lt "${COLUMNS:-80}" ];do s0="-$s0";i0=$[$i0+1];done;builtin echo -ne "\n$s0\E(B\E[0m"; [ $r0 == 0 ] && builtin echo -ne "\e[1A\e[32m[ok]" || builtin echo -ne "\e[1A\e[31m[fail]";else unset NP;fi;history -a'
+#     NP=0
+# 
+#     PS1='$(get_env_status "%s")
+#     \[\e[0;33m\][\D{%Y-%m-%d %H:%M}]\[\e[m\]  \[\e[0;35m\]\w\[\e[m\]
+#     \[\e[0;36m\]\u.\h\[\e[m\]:\[\e[0;35m\]\W\[\e[m\] \[\e[0;36m\]>\[\e[m\] '
+# 
+#     export PROMPT_COMMAND NP PS1
+# fi
 
 
 ##### JAVA config
@@ -268,9 +268,17 @@ fi
 
 
 #### NVM config
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+if [ -d $HOME/.nvm ]; then
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+fi
+
+
+#### Rust binaries
+if [ -d $HOME/.cargo/bin ]; then
+    export PATH="$HOME/.cargo/bin:$PATH"
+fi
 
 
 #### DEVKIT Pro (3DS Homebrew)

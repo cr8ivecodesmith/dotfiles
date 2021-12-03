@@ -25,6 +25,9 @@ set -Ux TERM "xterm-256color"
 alias tmux="tmux -2"
 alias rmi="rm -i"
 alias gits="git status"
+alias gitf="git fetch"
+alias gitpl="git pull"
+alias gitps="git push"
 
 
 ##### JAVA config
@@ -61,10 +64,20 @@ if test -d $HOME/.pyenv/bin; and test -d $HOME/.pyenv/plugins/pyenv-virtualenv
 end
 
 
-#### NPM config
+#### NPM and NVM config
 if test -d $HOME/.npm-packages
     set NPM_PACKAGES $HOME/.npm-packages
     set PATH $NPM_PACKAGES/bin $PATH
+end
+
+if test -d $HOME/.nvm
+    set NVM_DIR $HOME/.nvm
+end
+
+
+#### Rust binaries
+if test -d $HOME/.cargo/bin
+    set PATH $HOME/.cargo/bin $PATH
 end
 
 
