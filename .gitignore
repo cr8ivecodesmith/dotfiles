@@ -1,7 +1,13 @@
-projects/*
-sys/tmp/*
-sys/src
-.vim/.netrwhist
+*.swp
+*~
+*.py[co]
+*.log
+.netrwhist
+.python-version
+__pycache__
+fish_variables
+log
+
 .vim/bundle/
 .vim/plugged/
 .vim/view/
@@ -9,11 +15,13 @@ sys/src
 .local/share/nvim/site/
 .local/share/nvim/site/autoload/plug.vim
 .local/share/nvim/view/
+.config/fish/conf.d
+.config/fish/fishd.*
 .config/nvim/plugged/
 .config/nvim/.netrwhist
-*.swp
-*~
-*.py[co]
-__pycache__
+.tmux/plugins/
 
-.config/fish/fishd.*
+projects/*
+sys/tmp/*
+sys/src
+swap/
