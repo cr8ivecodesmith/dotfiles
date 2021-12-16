@@ -10,7 +10,7 @@ end
 
 function fish_greeting
     if type -q fortune
-        fortune
+        fortune -as
     else
         echo ""
     end
