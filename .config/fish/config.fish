@@ -64,6 +64,12 @@ if test -d $HOME/.pyenv/bin; and test -d $HOME/.pyenv/plugins/pyenv-virtualenv
 end
 
 
+#### Local pip
+if test -d $HOME/.local/bin
+    set PATH $PATH $HOME/.local/bin
+end
+
+
 #### NPM and NVM config
 if test -d $HOME/.npm-packages
     set NPM_PACKAGES $HOME/.npm-packages

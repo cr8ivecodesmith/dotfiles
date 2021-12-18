@@ -260,6 +260,11 @@ fi
 #   fi
 #fi
 
+#### Local pip
+if [ -d $HOME/.local/bin ]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+
 #### NPM config
 if [ -d $HOME/.npm-packages/bin ]; then
     export NPM_PACKAGES="$HOME/.npm-packages"
