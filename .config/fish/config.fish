@@ -23,7 +23,10 @@ set -Ux TERM "xterm-256color"
 
 ##### Aliases
 alias tmux="tmux -2"
-alias rmi="rm -i"
+alias rm="rm -i"
+alias cp='cp -i'
+alias mv='mv -i'
+alias mkdir='mkdir -p'
 alias gits="git status"
 alias gitf="git fetch"
 alias gitpl="git pull"
