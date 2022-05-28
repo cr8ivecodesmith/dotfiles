@@ -98,6 +98,12 @@ if test -d /opt/devkitpro
 end
 
 
+#### NGAGESDK
+if test -d $HOME/projects/oss/ngage-toolchain
+    set NGAGESDK $HOME/projects/oss/ngage-toolchain
+end
+
+
 #### CLOUDSDK config
 # The next line updates PATH for the Google Cloud SDK.
 # if [ -f '/home/matt/Apps/google-cloud-sdk/path.fish.inc' ]; . '/home/matt/Apps/google-cloud-sdk/path.fish.inc'; end
