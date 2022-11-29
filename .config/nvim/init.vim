@@ -162,6 +162,13 @@ au BufNewFile,BufRead *.mdown set filetype=markdown
 " Vagrantfile and Dockerfile support
 au BufNewFile,BufRead Vagrantfile* set filetype=ruby
 
+" JS, HTML, CSS, JSON tab settings
+autocmd FileType javascript setlocal tabstop=2 shiftwidth=2 softtabstop=2
+autocmd FileType html setlocal tabstop=2 shiftwidth=2 softtabstop=2
+autocmd FileType htmldjango setlocal tabstop=2 shiftwidth=2 softtabstop=2
+autocmd FileType css setlocal tabstop=2 shiftwidth=2 softtabstop=2
+autocmd FileType json setlocal tabstop=2 shiftwidth=2 softtabstop=2
+
 " ##### END FILE-TYPES SETTINGS
 
 " ##### LEADER SHORTCUTS SETTINGS
