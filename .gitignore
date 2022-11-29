@@ -11,6 +11,7 @@ log
 .vim/bundle/
 .vim/plugged/
 .vim/view/
+.local/share/nvim/plugged/
 .local/share/nvim/shada/
 .local/share/nvim/site/
 .local/share/nvim/site/autoload/plug.vim
