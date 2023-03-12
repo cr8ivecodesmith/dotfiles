@@ -258,7 +258,7 @@ if !empty(glob(expand("~/.config/nvim/plugged/ctrlp.vim")))
     set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pid,__pycache__
     let g:ctrlp_custom_ignore = {
         \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-        \ 'file': '\v\.(exe|so|dll)$',
+        \ 'file': '\v\.(exe|so|dll|pyc)$',
         \ }
 
     " Ignore files in .gitignore
