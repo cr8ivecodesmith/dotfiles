@@ -112,6 +112,7 @@ alias mkdir='mkdir -p'
 alias ..='cd ..'
 alias du='du -h'
 alias df='df -h'
+alias mosh='mosh --server "mosh-server new -s -l LANG=en_US.UTF-8"'
 
 
 # enable programmable completion features (you don't need to enable

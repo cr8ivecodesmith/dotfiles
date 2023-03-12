@@ -26,6 +26,7 @@ alias tmux="tmux -2"
 alias rm="rm -i"
 alias cp='cp -i'
 alias mv='mv -i'
+alias mosh='mosh --server "mosh-server new -s -l LANG=en_US.UTF-8"'
 alias mkdir='mkdir -p'
 alias gits="git status"
 alias gitf="git fetch"
