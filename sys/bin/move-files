@@ -1,0 +1,98 @@
+#!/usr/bin/env python
+
+import shutil
+from pathlib import Path
+
+
+MATCH_TYPES = ('all', 'any')
+
+
+def get_filters_from_args(args):
+    """Return a dictionary of filters
+
+    i.e.
+    {
+        'contains': [...],
+        'match_type': 'all',
+        'ignore_case': False,
+        ...
+    }
+
+    """
+    filters = {
+        'contains': args.filter_contains or [],
+        'match_type': args.match_type or 'all',
+        'ignore_case': args.ignore_case or False,
+    }
+    return filters
+
+
+def get_files(src_path, filters=None):
+    fcontains = filters['contains']
+    mtype = any if filters['match_type'] == 'any' else all
+
+    if filters['ignore_case']:
+        fcontains = [i.lower() for i in fcontains]
+
+    for f in src_path.iterdir():
+        fstem = f.stem.lower() if filters['ignore_case'] else f.stem
+        if mtype([s in fstem for s in fcontains]):
+            yield f
+
+
+def _main(args):
+    from_dir = Path(args.FROM_DIR)
+    to_dir = Path(args.TO_DIR)
+    count = 0
+
+    # Make sure the destination directory exists!
+    to_dir.mkdir(mode=0o755, parents=True, exist_ok=True)
+
+    for f in get_files(from_dir, filters=get_filters_from_args(args)):
+        print(f'Moving file -> {f}')
+        shutil.move(f, to_dir)
+        count += 1
+
+    print(f'Moved {count} files!')
+
+    return
+
+
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser()
+    parser.add_argument(
+        'FROM_DIR',
+        help='Directory path where the files can be found.'
+    )
+    parser.add_argument(
+        'TO_DIR',
+        help=(
+            'Directory path where the files will be moved. Creates the folder '
+            'if it doesn\'t exist.'
+        )
+    )
+    parser.add_argument(
+        '--contains', '-c',
+        dest='filter_contains',
+        help='Filter filename containing string.',
+        nargs='+',
+    )
+    parser.add_argument(
+        '--match-type', '-T',
+        help='Set filter match type. (Default: all)',
+        default='all',
+        choices=MATCH_TYPES,
+    )
+
+    parser.add_argument(
+        '--ignore-case', '-I',
+        help='Ignore case sensitivity.',
+        action='store_true',
+        default=False
+    )
+
+    args = parser.parse_args()
+
+    _main(args)

@@ -238,6 +238,9 @@ fi
 #  source '$HOME/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc'
 #fi
 
+# New auth plugin for gcloud as of kube V1.26
+export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
 
 ##### Elixir config
 #test -s "$HOME/.kiex/scripts/kiex" && source "$HOME/.kiex/scripts/kiex"

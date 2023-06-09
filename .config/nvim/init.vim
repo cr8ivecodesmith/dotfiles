@@ -306,6 +306,7 @@ endif
 
 " ##### PYTHON-MODE PLUGIN SETTINGS
 if !empty(glob(expand("~/.config/nvim/plugged/python-mode")))
+    leb g:pymode_python = 'python3'
     let g:pymode_folding = 0
 
     let g:pymode_motion = 1

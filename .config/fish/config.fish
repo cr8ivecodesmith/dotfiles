@@ -109,6 +109,9 @@ end
 # The next line updates PATH for the Google Cloud SDK.
 # if [ -f '/home/matt/Apps/google-cloud-sdk/path.fish.inc' ]; . '/home/matt/Apps/google-cloud-sdk/path.fish.inc'; end
 
+# New auth plugin for gcloud as of kube V1.26
+set USE_GKE_GCLOUD_AUTH_PLUGIN True
+
 #### CONDA config
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!

@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+"""
+Mount a drive or flashdrive from WSL
+
+Reference: https://askubuntu.com/a/1116220/51342
+
+"""
+from subprocess import run
+from pathlib import Path
+from os import environ
+from sys import exit
+
+
+def _run(args, **kwargs):
+    out = run(
+        args,
+        text=True,
+        capture_output=True,
+        **kwargs
+    )
+    if out.returncode:
+        print(f'ERROR: {out.stdout + out.stderr}')
+        exit(out.returncode)
+
+    return out
+
+
+def _main(args):
+    drive_letter = args.DRIVE_LETTER.strip().replace(':', '').lower()
+    user = environ.get('USER')
+    mount_path = Path(f'/media/{user}/{drive_letter}')
+
+    if args.unmount:
+        _run(['sudo', 'umount', f'{mount_path}'])
+        _run(['sudo', 'rm', '-rf', f'{mount_path}'])
+        print(f'{drive_letter.upper()}:\\ unmounted from {mount_path}')
+        exit(0)
+
+    if mount_path.exists():
+        count = len([i for i in mount_path.iterdir()])
+        if count:
+            print(f'The mount path {mount_path} has files in it. '
+                  'Is it being used by another process?')
+            exit(0)
+
+        ans = input(f'Mount path {mount_path} already exist! '
+                    'Overwrite (y/N)? ')
+        if ans.strip().lower().startswith('y'):
+            _run(['sudo', 'rm', '-rf', f'{mount_path}'])
+        else:
+            print('Cancelled.')
+            exit(0)
+
+    _run(['sudo', 'mkdir', '-p', f'{mount_path}'])
+    _run(['sudo', 'mount', '-t', 'drvfs',
+          f'{drive_letter}:', f'{mount_path}'])
+    print(f'{drive_letter.upper()}:\\ mounted on {mount_path}')
+
+    exit(0)
+
+
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser()
+    parser.add_argument(
+        'DRIVE_LETTER',
+        help='Drive letter to mount',
+    )
+
+    parser.add_argument(
+        '--force', '-f',
+        help='Use mount path even if it exists.'
+    )
+
+    parser.add_argument(
+        '--unmount', '-U',
+        help='Unmount the drive.',
+        action='store_true',
+        default=False
+    )
+
+    args = parser.parse_args()
+    _main(args)
