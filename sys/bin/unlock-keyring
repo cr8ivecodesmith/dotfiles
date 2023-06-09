@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# Unlocks the keyring daemon and runs it in the background
+#
+
+
+read -rsp "Password: " pass
+export $(echo -n "$pass" | /usr/bin/gnome-keyring-daemon -d --replace --unlock --components=secrets)
+unset pass

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+sudo mount.cifs \
+    //192.168.254.130/files0 \
+    /media/matt/NexusFiles/ \
+    -o user=matt,uid=1000,gid=1000,noperm
+sudo mount.cifs \
+    //192.168.254.130/files1 \
+    /media/matt/NexusFiles1/ \
+    -o user=matt,uid=1000,gid=1000,noperm
+sudo mount.cifs \
+    //192.168.254.130/media \
+    /media/matt/NexusMedia/ \
+    -o user=matt,uid=1000,gid=1000,noperm
+sudo mount.cifs \
+    //192.168.254.130/media-fun \
+    /media/matt/NexusMediaFun/ \
+    -o user=matt,uid=1000,gid=1000,noperm
+
