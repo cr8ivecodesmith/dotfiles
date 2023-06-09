@@ -34,6 +34,20 @@ alias gitpl="git pull"
 alias gitps="git push"
 
 
+##### Update PATH
+# Define the paths you want to append
+set paths_to_append /usr/sbin /sbin
+
+# Loop over each path
+for path in $paths_to_append
+    # Check if the PATH already contains the current path
+    if not contains $path $PATH
+        # If not, append the path to the PATH variable
+        set -gx PATH $PATH $path
+    end
+end
+
+
 ##### JAVA config
 if test -d /usr/lib/jvm/java-8-openjdk-amd64/bin
     set JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64

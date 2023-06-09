@@ -213,6 +213,19 @@ function get_env_status() {
 #     export PROMPT_COMMAND NP PS1
 # fi
 
+##### Update PATH
+# Define the paths you want to append
+paths_to_append=("/usr/sbin" "/sbin")
+
+# Loop over each path
+for path in "${paths_to_append[@]}"
+do
+    # Check if the PATH already contains the current path
+    if [[ ! $PATH =~ (^|:)$path(:|$) ]]; then
+        # If not, append the path to the PATH variable
+        export PATH=$PATH:$path
+    fi
+done
 
 ##### JAVA config
 jdk_ver="8"
