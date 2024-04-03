@@ -150,9 +150,6 @@ endif
 " Fix for pasting in insert mode
 set pastetoggle=<F2>
 
-" Map yanks to system clipboard
-" set clipboard=unnamedplus
-
 " Always switch to the current file's directory
 autocmd BufEnter * silent! lcd %:p:h
 
@@ -220,6 +217,9 @@ noremap <Leader>qq :q!<CR>
 
 " Execute current Python file
 noremap <Leader>xP :!python %:p<CR>
+
+" Yanks to system clipboard via visual mode
+noremap <Leader>yy "+y
 
 
 " ##### END LEADER SHORTCUTS SETTINGS
