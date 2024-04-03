@@ -216,7 +216,7 @@ noremap <Leader>t :Vex<CR>
 noremap <Leader>p :pwd<CR>
 
 " Quit
-noremap <Leader>qq :q<CR>
+noremap <Leader>qq :q!<CR>
 
 " Execute current Python file
 noremap <Leader>xP :!python %:p<CR>
