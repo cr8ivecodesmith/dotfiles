@@ -168,6 +168,8 @@ autocmd FileType html setlocal tabstop=2 shiftwidth=2 softtabstop=2
 autocmd FileType htmldjango setlocal tabstop=2 shiftwidth=2 softtabstop=2
 autocmd FileType css setlocal tabstop=2 shiftwidth=2 softtabstop=2
 autocmd FileType json setlocal tabstop=2 shiftwidth=2 softtabstop=2
+autocmd FileType robot setlocal noexpandtab tabstop=4 shiftwidth=4
+
 
 " ##### END FILE-TYPES SETTINGS
 
@@ -205,7 +207,7 @@ noremap <Leader>t :Vex<CR>
 noremap <Leader>p :pwd<CR>
 
 " Quit
-noremap <Leader>qq :q<CR>
+noremap <Leader>qq :q!<CR>
 
 " Execute current Python file
 noremap <Leader>xP :!python %:p<CR>
