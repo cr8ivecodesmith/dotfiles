@@ -148,7 +148,7 @@ if !empty(glob(expand("~/.local/share/nvim/site/autoload")))
 endif
 
 " Fix for pasting in insert mode
-set pastetoggle=<F2>
+" set pastetoggle=<F2>
 
 " Always switch to the current file's directory
 autocmd BufEnter * silent! lcd %:p:h

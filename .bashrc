@@ -264,18 +264,18 @@ export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
 ##### pyenv config
 # Set PATH variables
-#if [[ -d $HOME/.pyenv/bin && -d $HOME/.pyenv/plugins/pyenv-virtualenv ]]; then
-#   export PYENV_ROOT="$HOME/.pyenv"
-#   export PATH="$PYENV_ROOT/bin:$PATH"
-#
-#   # Enable pyenv autocompletion
-#   if command -v pyenv 1>/dev/null 2>&1;then
-#       eval "$(pyenv init -)"
-#
-#       # Enable auto activation of pyenv virtualenvs
-#       eval "$(pyenv virtualenv-init -)"
-#   fi
-#fi
+if [[ -d $HOME/.pyenv/bin && -d $HOME/.pyenv/plugins/pyenv-virtualenv ]]; then
+   export PYENV_ROOT="$HOME/.pyenv"
+   export PATH="$PYENV_ROOT/bin:$PATH"
+
+   # Enable pyenv autocompletion
+   if command -v pyenv 1>/dev/null 2>&1;then
+       eval "$(pyenv init -)"
+
+       # Enable auto activation of pyenv virtualenvs
+       eval "$(pyenv virtualenv-init -)"
+   fi
+fi
 
 #### Local pip
 if [ -d $HOME/.local/bin ]; then
@@ -308,6 +308,12 @@ if [ -d /opt/devkitpro ]; then
     export DEVKITPRO=/opt/devkitpro
     export DEVKITARM=$DEVKITPRO/devkitARM
     export PATH=$PATH:$DEVKITARM/bin
+fi
+
+
+#### Docker Daemon on Android
+if ps aux | grep -P "qemu-system-x86_64.+2375" | grep -v grep > /dev/null; then
+  export DOCKER_HOST=tcp://127.0.0.1:2375
 fi
 
 

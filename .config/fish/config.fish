@@ -10,7 +10,8 @@ end
 
 function fish_greeting
     if type -q fortune
-        fortune -as
+        #fortune -as
+        fortune
     else
         echo ""
     end
@@ -125,6 +126,13 @@ end
 
 # New auth plugin for gcloud as of kube V1.26
 set USE_GKE_GCLOUD_AUTH_PLUGIN True
+
+
+#### Docker Daemon on Android
+if ps aux | grep -P "qemu-system-x86_64.+2375" | grep -v grep > /dev/null
+    set -gx DOCKER_HOST tcp://127.0.0.1:2375
+end
+
 
 #### CONDA config
 # >>> conda initialize >>>
