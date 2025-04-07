@@ -10,8 +10,11 @@ end
 
 function fish_greeting
     if type -q fortune
-        #fortune -as
-        fortune
+        if fortune -v 2>&1 | grep -q "fortune-mod"
+            fortune -as
+        else
+            fortune
+        end
     else
         echo ""
     end
