@@ -131,6 +131,7 @@ if !empty(glob(expand("~/.local/share/nvim/site/autoload")))
         Plug 'edkolev/promptline.vim'
         Plug 'edkolev/tmuxline.vim'
         Plug 'vim-airline/vim-airline'
+        Plug 'vim-airline/vim-airline-themes'
         Plug 'airblade/vim-gitgutter'
         Plug 'ctrlpvim/ctrlp.vim'
         " Plug 'davidhalter/jedi-vim'
@@ -256,13 +257,13 @@ set laststatus=2
 " ##### END VIM THEME SETTINGS
 
 " ##### POWERLINE FONTS SETTINGS
-if !empty(glob(expand("~/.config/nvim/plugged/vim-airline")))
+if !empty(glob(expand("~/.local/share/nvim/plugged/vim-airline")))
     let g:airline_powerline_fonts = 1
 endif
 " ##### END POWERLINE FONTS SETTINGS
 
 " ##### CTRLP PLUGIN SETTINGS
-if !empty(glob(expand("~/.config/nvim/plugged/ctrlp.vim")))
+if !empty(glob(expand("~/.local/share/nvim/plugged/ctrlp.vim")))
     " Set keymapping
     let g:ctrlp_map = '<c-p>'
     let g:ctrlp_cmd = 'CtrlP'
@@ -280,7 +281,7 @@ endif
 " ##### END CTRLP PLUGIN SETTINGS
 
 " ##### PROMPTLINE PLUGIN SETTINGS
-if !empty(glob(expand("~/.config/nvim/plugged/promptline.vim")))
+if !empty(glob(expand("~/.local/share/nvim/plugged/promptline.vim")))
     let g:promptline_preset = {
         \'a': [ promptline#slices#host() ],
         \'b': [ promptline#slices#user() ],
@@ -289,37 +290,37 @@ if !empty(glob(expand("~/.config/nvim/plugged/promptline.vim")))
         \'z': [ promptline#slices#vcs_branch() ],
         \'warn': [ promptline#slices#last_exit_code() ]}
 
-    if !empty(glob(expand("~/.config/nvim/plugged/vim-airline")))
-        let g:promptline_theme = 'airline'
+    if !empty(glob(expand("~/.local/share/nvim/plugged/vim-airline")))
+        let g:promptline_theme = 'solarized'
     endif
 endif
 " ##### END PROMPTLINE PLUGIN SETTINGS
 
 " ##### TMUXLINE PLUGIN SETTINGS
-if !empty(glob(expand("~/.config/nvim/plugged/tmuxline.vim")))
-    let g:tmuxline_theme = 'airline'
+if !empty(glob(expand("~/.local/share/nvim/plugged/tmuxline.vim")))
+    let g:tmuxline_theme = 'solarized'
     let g:tmuxline_preset = 'powerline'
 endif
 " ##### END TMUXLINE PLUGIN SETTINGS
 
 " ##### DEOPLETE PLUGIN SETTINGS
-if !empty(glob(expand("~/.config/nvim/plugged/deoplete.vim")))
+if !empty(glob(expand("~/.local/share/nvim/plugged/deoplete.vim")))
     let g:deoplete#enable_at_startup = 1
 endif
-if !empty(glob(expand("~/.config/nvim/plugged/deoplete-jedi")))
+if !empty(glob(expand("~/.local/share/nvim/plugged/deoplete-jedi")))
     let g:deoplete#sources#jedi#show_docstring = 1
 endif
 " ##### END DEOPLETE PLUGIN SETTINGS
 
 " ##### JEDI PLUGIN SETTINGS
-if !empty(glob(expand("~/.config/nvim/plugged/jedi-vim")))
+if !empty(glob(expand("~/.local/share/nvim/plugged/jedi-vim")))
     let g:jedi#completions_enabled = 0
 endif
 " ##### END JEDI PLUGIN SETTINGS
 
 " ##### PYTHON-MODE PLUGIN SETTINGS
-if !empty(glob(expand("~/.config/nvim/plugged/python-mode")))
-    leb g:pymode_python = 'python3'
+if !empty(glob(expand("~/.local/share/nvim/plugged/python-mode")))
+    let g:pymode_python = 'python3'
     let g:pymode_folding = 0
 
     let g:pymode_motion = 1
@@ -352,7 +353,7 @@ endif
 " ##### END PYTHON-MODE PLUGIN SETTINGS
 
 " ##### SIMPYL-FOLD PLUGIN SETTINGS
-if !empty(glob(expand("~/.config/nvim/plugged/SimpylFold")))
+if !empty(glob(expand("~/.local/share/nvim/plugged/SimpylFold")))
     let g:SimpylFold_docstring_preview = 0
     let g:SimpylFold_fold_docstring = 1
     let g:SimpylFold_fold_import = 1
@@ -360,14 +361,14 @@ endif
 " ##### END SIMPYL-FOLD PLUGIN SETTINGS
 
 " ##### FAST-FOLD PLUGIN SETTINGS
-if !empty(glob(expand("~/.config/nvim/plugged/FastFold")))
+if !empty(glob(expand("~/.local/share/nvim/plugged/FastFold")))
     nmap zuz <Plug>(FastFoldUpdate)
     let g:fastfold_savehook = 1
 endif
 " ##### END FAST-FOLD PLUGIN SETTINGS
 
 " ##### VIM-STAY PLUGIN SETTINGS
-if !empty(glob(expand("~/.config/nvim/plugged/vim-stay")))
+if !empty(glob(expand("~/.local/share/nvim/plugged/vim-stay")))
     set viewoptions=cursor,folds,slash,unix
 endif
 " ##### END VIM-STAY PLUGIN SETTINGS
