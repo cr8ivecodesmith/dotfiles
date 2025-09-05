@@ -1,11 +1,11 @@
 # Load promptline configuration
-function fish_prompt
-  env FISH_VERSION=$FISH_VERSION PROMPTLINE_LAST_EXIT_CODE=$status bash ~/.promptline.sh left
-end
-
-function fish_right_prompt
-  env FISH_VERSION=$FISH_VERSION PROMPTLINE_LAST_EXIT_CODE=$status bash ~/.promptline.sh right
-end
+# function fish_prompt
+#   env FISH_VERSION=$FISH_VERSION PROMPTLINE_LAST_EXIT_CODE=$status bash ~/.promptline.sh left
+# end
+# 
+# function fish_right_prompt
+#   env FISH_VERSION=$FISH_VERSION PROMPTLINE_LAST_EXIT_CODE=$status bash ~/.promptline.sh right
+# end
 
 
 function fish_greeting
@@ -18,6 +18,83 @@ function fish_greeting
     else
         echo ""
     end
+end
+
+
+function __distro_icon
+    set -l id unknown
+    if test -r /etc/os-release
+        set id (string replace -r '^ID=' '' (grep '^ID=' /etc/os-release | head -n1) | tr -d '"')
+    end
+
+    switch $id
+        case kali ubuntu
+            echo ""
+        case arch
+            echo ""
+        case debian
+            echo ""
+        case fedora
+            echo ""
+        case alpine
+            echo ""
+        case void
+            echo ""
+        case 'opensuse*' sles
+            echo ""
+        case gentoo
+            echo ""
+        case nixos
+            echo ""
+        case '*'
+            echo ""
+    end
+end
+
+
+function __user_name
+    echo (whoami)
+end
+
+
+function __venv_name --description 'Print active venv/conda env name'
+    if set -q VIRTUAL_ENV
+        echo ' ('(basename $VIRTUAL_ENV)')'
+        return 0
+    else if set -q CONDA_DEFAULT_ENV
+        echo ' ('$CONDA_DEFAULT_ENV')'
+        return 0
+    end
+    return 1
+end
+
+
+function fish_prompt
+    set -l green (set_color -o green)
+    set -l blue  (set_color -o blue)
+    set -l cyan  (set_color -o cyan)
+    set -l yellow (set_color -o yellow)
+    set -l orange (set_color 'FFB347')
+    set -l bold  (set_color -o)
+    set -l reset (set_color normal)
+
+    set -l uname  (__user_name)
+    set -l host   (hostname -s)
+    set -l icon   (__distro_icon)
+    set -l cwd    (prompt_pwd)
+
+    set -l vcs  ''(fish_vcs_prompt)
+    set -l ven  (__venv_name)
+
+    # Line 1: ╭─[ user ICON host ] [ cwd ] *venv* *vcs*
+    echo -n $bold$orange'╭─'$blue'['$cyan$uname$orange' '$icon ' '$cyan$host$blue']'$reset' '
+    echo -n $blue'['$yellow$cwd$blue']'$reset' '
+    echo -n $blue$ven $reset
+    echo -n $blue$vcs $reset
+
+    # Line 2: ╰─❯ 
+    echo $reset' '
+    echo -n $bold$orange'╰─❯ '$reset
 end
 
 
@@ -134,6 +211,13 @@ set USE_GKE_GCLOUD_AUTH_PLUGIN True
 #### Docker Daemon on Android
 if ps aux | grep -P "qemu-system-x86_64.+2375" | grep -v grep > /dev/null
     set -gx DOCKER_HOST tcp://127.0.0.1:2375
+end
+
+
+#### Codex CLI Env
+if test -d $HOME/.codex-cli-env/bin
+    set PATH $HOME/.codex-cli-env/bin $PATH
+    source $HOME/.codex-cli-env/shell/codexenv.fish
 end
 
 
