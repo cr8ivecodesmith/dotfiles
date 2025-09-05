@@ -21,6 +21,8 @@ log
 .config/nvim/plugged/
 .config/nvim/.netrwhist
 .tmux/plugins/
+.fonts/PragmataPro*
+.fonts/Iosevka*
 
 projects/*
 sys/tmp/*
