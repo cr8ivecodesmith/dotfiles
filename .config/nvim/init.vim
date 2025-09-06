@@ -69,6 +69,17 @@ let g:netrw_winsize = 25
 "   autocmd VimEnter * :Vexplore
 " augroup END
 
+" disable language specific providers
+let g:loaded_perl_provider = 0
+let g:loaded_ruby_provider = 0
+let g:loaded_node_provider = 0
+
+" load language specific providers
+if !empty(glob(expand("~/.pyenv/versions/neovim/bin/python")))
+    " Ref: https://github.com/deoplete-plugins/deoplete-jedi/wiki/Setting-up-Python-for-Neovim#using-virtual-environments
+    let g:python3_host_prog = glob(expand('~/.pyenv/versions/neovim/bin/python'))
+endif
+
 " ##### END GENERAL SETTINGS
 
 
@@ -128,23 +139,25 @@ if !empty(glob(expand("~/.local/share/nvim/site/autoload")))
         Plug 'tpope/vim-fugitive'
         Plug 'honza/dockerfile.vim'
         Plug 'leafgarland/typescript-vim'
-        Plug 'edkolev/promptline.vim'
-        Plug 'edkolev/tmuxline.vim'
+        " Plug 'edkolev/promptline.vim'
+        " Plug 'edkolev/tmuxline.vim'
         Plug 'vim-airline/vim-airline'
         Plug 'vim-airline/vim-airline-themes'
         Plug 'airblade/vim-gitgutter'
         Plug 'ctrlpvim/ctrlp.vim'
-        " Plug 'davidhalter/jedi-vim'
         Plug 'ervandew/supertab'
-        " Plug 'Shougo/deoplete.nvim'
-        " Plug 'zchee/deoplete-jedi'
         Plug 'tmux-plugins/vim-tmux-focus-events'
-        Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
-        " Plug 'python-mode/python-mode', { 'branch': 'last-py2-support' }
         Plug 'tmhedberg/SimpylFold'
         Plug 'Konfekt/FastFold'
         Plug 'zhimsel/vim-stay'
         Plug 'sirtaj/vim-openscad'
+        Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+        Plug 'deoplete-plugins/deoplete-jedi'
+        Plug 'davidhalter/jedi-vim'
+
+        " Note: I probably should stop using these...
+        " Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
+        " Plug 'python-mode/python-mode', { 'branch': 'last-py2-support' }
     call plug#end()
 endif
 
@@ -256,12 +269,6 @@ set laststatus=2
 " set background=light
 " ##### END VIM THEME SETTINGS
 
-" ##### POWERLINE FONTS SETTINGS
-if !empty(glob(expand("~/.local/share/nvim/plugged/vim-airline")))
-    let g:airline_powerline_fonts = 1
-endif
-" ##### END POWERLINE FONTS SETTINGS
-
 " ##### CTRLP PLUGIN SETTINGS
 if !empty(glob(expand("~/.local/share/nvim/plugged/ctrlp.vim")))
     " Set keymapping
@@ -280,27 +287,36 @@ if !empty(glob(expand("~/.local/share/nvim/plugged/ctrlp.vim")))
 endif
 " ##### END CTRLP PLUGIN SETTINGS
 
-" ##### PROMPTLINE PLUGIN SETTINGS
-if !empty(glob(expand("~/.local/share/nvim/plugged/promptline.vim")))
-    let g:promptline_preset = {
-        \'a': [ promptline#slices#host() ],
-        \'b': [ promptline#slices#user() ],
-        \'c': [ promptline#slices#cwd() ],
-        \'y': [ promptline#slices#python_virtualenv() ],
-        \'z': [ promptline#slices#vcs_branch() ],
-        \'warn': [ promptline#slices#last_exit_code() ]}
-
-    if !empty(glob(expand("~/.local/share/nvim/plugged/vim-airline")))
-        let g:promptline_theme = 'solarized'
-    endif
+" ##### VIM-AIRLINE PLUGIN SETTINGS
+if !empty(glob(expand("~/.local/share/nvim/plugged/vim-airline")))
+    let g:airline#extensions#tabline#enabled = 1
+    let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+    let g:airline_powerline_fonts = 1
+    let g:airline_theme='base16_decaf'
 endif
+" ##### END VIM-AIRLINE PLUGIN SETTINGS
+
+" ##### PROMPTLINE PLUGIN SETTINGS
+" if !empty(glob(expand("~/.local/share/nvim/plugged/promptline.vim")))
+"     let g:promptline_preset = {
+"         \'a': [ promptline#slices#host() ],
+"         \'b': [ promptline#slices#user() ],
+"         \'c': [ promptline#slices#cwd() ],
+"         \'y': [ promptline#slices#python_virtualenv() ],
+"         \'z': [ promptline#slices#vcs_branch() ],
+"         \'warn': [ promptline#slices#last_exit_code() ]}
+"
+"     if !empty(glob(expand("~/.local/share/nvim/plugged/vim-airline")))
+"         let g:promptline_theme = 'solarized'
+"     endif
+" endif
 " ##### END PROMPTLINE PLUGIN SETTINGS
 
 " ##### TMUXLINE PLUGIN SETTINGS
-if !empty(glob(expand("~/.local/share/nvim/plugged/tmuxline.vim")))
-    let g:tmuxline_theme = 'solarized'
-    let g:tmuxline_preset = 'powerline'
-endif
+" if !empty(glob(expand("~/.local/share/nvim/plugged/tmuxline.vim")))
+"     let g:tmuxline_theme = 'solarized'
+"     let g:tmuxline_preset = 'powerline'
+" endif
 " ##### END TMUXLINE PLUGIN SETTINGS
 
 " ##### DEOPLETE PLUGIN SETTINGS
@@ -314,42 +330,49 @@ endif
 
 " ##### JEDI PLUGIN SETTINGS
 if !empty(glob(expand("~/.local/share/nvim/plugged/jedi-vim")))
+    " Ensure compatibility with deoplete
     let g:jedi#completions_enabled = 0
+
+    let g:jedi#use_splits_not_buffers = "left"
+    let g:jedi#use_tabs_not_buffers = 1
+    let g:jedi#popup_on_dot = 0
+    " let g:jedi#popup_select_first = 0
+    let g:jedi#show_call_signatures = "2"
 endif
 " ##### END JEDI PLUGIN SETTINGS
 
 " ##### PYTHON-MODE PLUGIN SETTINGS
-if !empty(glob(expand("~/.local/share/nvim/plugged/python-mode")))
-    let g:pymode_python = 'python3'
-    let g:pymode_folding = 0
-
-    let g:pymode_motion = 1
-
-    let g:pymode_doc = 1
-    let g:pymode_doc_bind = 'K'
-
-    let g:pymode_run = 1
-    let g:pymode_run_bind = '<leader>r'
-
-    let g:pymode_breakpoint = 1
-    let g:pymode_breakpoint_bind = '<leader>b'
-    let g:pymode_breakpoint_cmd = ''  " Empty for auto-detect
-
-    let g:pymode_lint = 1
-    let g:pymode_lint_ignore = ['E121', 'E123' , 'E126', 'E226', 'E24', 'E704', 'E402', 'E501', 'N806', 'N802', 'W503',]
-    " let g:pymode_lint_select = ['E501', 'W0011', 'W430']
-    let g:pymode_lint_options_mccabe = { 'complexity': 12 }
-
-    let g:pymode_rope = 1
-    let g:pymode_rope_completion = 1
-    let g:pymode_rope_complete_on_dot = 1
-    let g:pymode_rope_organize_imports_bind = '<C-c>ro'
-    let g:pymode_rope_show_doc_bind = '<C-c>d'
-    let g:pymode_rope_regenerate_on_write = 1
-    let g:pymode_rope_goto_definition_bind = '<C-c>g'
-    let g:pymode_rope_rename_bind = '<C-c>rr'
-    let g:pymode_rope_rename_module_bind = '<C-c>r1r'
-endif
+" if !empty(glob(expand("~/.local/share/nvim/plugged/python-mode")))
+"     let g:pymode_python = 'python3'
+"     let g:pymode_folding = 0
+" 
+"     let g:pymode_motion = 1
+" 
+"     let g:pymode_doc = 1
+"     let g:pymode_doc_bind = 'K'
+" 
+"     let g:pymode_run = 1
+"     let g:pymode_run_bind = '<leader>r'
+" 
+"     let g:pymode_breakpoint = 1
+"     let g:pymode_breakpoint_bind = '<leader>b'
+"     let g:pymode_breakpoint_cmd = ''  " Empty for auto-detect
+" 
+"     let g:pymode_lint = 1
+"     let g:pymode_lint_ignore = ['E121', 'E123' , 'E126', 'E226', 'E24', 'E704', 'E402', 'E501', 'N806', 'N802', 'W503',]
+"     " let g:pymode_lint_select = ['E501', 'W0011', 'W430']
+"     let g:pymode_lint_options_mccabe = { 'complexity': 12 }
+" 
+"     let g:pymode_rope = 1
+"     let g:pymode_rope_completion = 1
+"     let g:pymode_rope_complete_on_dot = 1
+"     let g:pymode_rope_organize_imports_bind = '<C-c>ro'
+"     let g:pymode_rope_show_doc_bind = '<C-c>d'
+"     let g:pymode_rope_regenerate_on_write = 1
+"     let g:pymode_rope_goto_definition_bind = '<C-c>g'
+"     let g:pymode_rope_rename_bind = '<C-c>rr'
+"     let g:pymode_rope_rename_module_bind = '<C-c>r1r'
+" endif
 " ##### END PYTHON-MODE PLUGIN SETTINGS
 
 " ##### SIMPYL-FOLD PLUGIN SETTINGS
