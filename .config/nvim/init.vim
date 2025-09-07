@@ -191,6 +191,8 @@ autocmd FileType htmldjango setlocal tabstop=2 shiftwidth=2 softtabstop=2
 autocmd FileType css setlocal tabstop=2 shiftwidth=2 softtabstop=2
 autocmd FileType json setlocal tabstop=2 shiftwidth=2 softtabstop=2
 autocmd FileType robot setlocal noexpandtab tabstop=4 shiftwidth=4
+autocmd FileType markdown setlocal tabstop=2 shiftwidth=2 softtabstop=2
+autocmd FileType sh setlocal tabstop=2 shiftwidth=2 softtabstop=2
 
 
 " ##### END FILE-TYPES SETTINGS
