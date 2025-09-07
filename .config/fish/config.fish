@@ -77,7 +77,7 @@ function fish_prompt
     set -l ven  (__venv_name)
 
     # Line 1: ╭─[ user ICON host ] [ cwd ] *venv* *vcs*
-    echo -n $bold$orange'╭─'$blue'[ '$orange$icon' '$cyan$uname$yellow'@'$cyan$host$blue' ]'$reset' '
+    echo -n $bold$orange'╭─'$blue'['$cyan$uname $orange$icon $cyan$host$blue']'$reset' '
     echo -n $blue'['$yellow$cwd$blue']'$reset' '
     echo -n $blue$ven $reset
     echo -n $blue$vcs $reset
