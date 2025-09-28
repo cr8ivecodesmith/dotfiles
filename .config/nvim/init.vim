@@ -26,7 +26,7 @@ set ruler
 set undolevels=1000
 set backspace=indent,eol,start
 set cursorline
-set colorcolumn=80
+set colorcolumn=81
 hi ColorColumn ctermbg=lightcyan guibg=lightcyan
 set listchars=eol:¬,tab:——,trail:·,extends:>,precedes:<,nbsp:%
 set list

@@ -47,12 +47,47 @@ function __user_name
 end
 
 
-function __venv_name --description 'Print active venv/conda env name'
-    if set -q VIRTUAL_ENV
-        echo ' ('(basename $VIRTUAL_ENV)')'
+function __venv_name1 --description 'Print active venv/conda env name'
+    if set -q CONDA_DEFAULT_ENV
+        echo '' "($CONDA_DEFAULT_ENV)"
         return 0
-    else if set -q CONDA_DEFAULT_ENV
-        echo ' ('$CONDA_DEFAULT_ENV')'
+    else if set -q VIRTUAL_ENV
+        if set -q VIRTUAL_ENV_PROMPT
+            echo '' "($VIRTUAL_ENV_PROMPT)"
+        else
+            echo '' "("(path basename "$VIRTUAL_ENV")")"
+        end
+        return 0
+    end
+    return 1
+end
+
+
+function __venv_name --description 'Print active venv/conda env name'
+    if set -q CONDA_DEFAULT_ENV
+        echo "($CONDA_DEFAULT_ENV)"
+        return 0
+    else if set -q VIRTUAL_ENV
+        set -l venv_dir (path basename "$VIRTUAL_ENV")
+        set -l name ""
+
+        # Respect explicit prompt if present (uv/venv can set this)
+        if set -q VIRTUAL_ENV_PROMPT
+            set name "$VIRTUAL_ENV_PROMPT"
+        # If the venv directory is a generic name, use the project folder
+        else if contains -- $venv_dir env venv .env .venv
+            set -l parent (path basename (path dirname "$VIRTUAL_ENV"))
+            # If venvs are centralized (e.g. ~/.venvs/...), fall back to CWD name
+            if contains -- $parent .venvs venvs virtualenvs .virtualenvs
+                set parent (path basename (pwd))
+            end
+            set name "$parent"
+        else
+            # Otherwise use the venv directory name itself
+            set name "$venv_dir"
+        end
+
+        echo '' "($name)"
         return 0
     end
     return 1
@@ -90,6 +125,13 @@ end
 
 ##### Environment variables
 set -Ux TERM "xterm-256color"
+
+# Turn off Python/uv prompt tweaks
+set -gx VIRTUAL_ENV_DISABLE_PROMPT 1
+set -gx CONDA_CHANGEPS1 no
+
+# Silence direnv loading messages
+set -gx DIRENV_LOG_FORMAT ""
 
 
 ##### Update PATH

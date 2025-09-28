@@ -19,6 +19,7 @@ log
 .config/fish/conf.d
 .config/fish/fishd.*
 .config/nvim/plugged/
+.config/nvim/pack/
 .config/nvim/.netrwhist
 .tmux/plugins/
 .fonts/PragmataPro*
