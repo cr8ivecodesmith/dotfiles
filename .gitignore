@@ -16,8 +16,9 @@ log
 .local/share/nvim/site/
 .local/share/nvim/site/autoload/plug.vim
 .local/share/nvim/view/
-.config/fish/conf.d
-.config/fish/fishd.*
+fish/conf.d
+fishd.*          # machine-specific universal variables
+fish_history     # command history
 .config/nvim/plugged/
 .config/nvim/pack/
 .config/nvim/.netrwhist

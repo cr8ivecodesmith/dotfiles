@@ -24,7 +24,7 @@ function __distro_icon
         case nixos
             echo ""
         case '*'
-            echo " "
+            echo ""
     end
 end
 
@@ -69,7 +69,7 @@ function fish_prompt
     set -l ven  (__venv_name)
 
     # Line 1: ╭─[ user ICON host ] [ cwd ] *venv* *vcs*
-    echo -n $bold$orange'╭─'$blue'['$cyan$uname$orange' '$icon ' '$cyan$host$blue']'$reset' '
+    echo -n $bold$orange'╭─'$blue'['$cyan$uname$orange $icon $cyan$host$blue']'$reset' '
     echo -n $blue'['$yellow$cwd$blue']'$reset' '
     echo -n $blue$ven $reset
     echo -n $blue$vcs $reset
@@ -90,20 +90,6 @@ function fish_greeting
     else
         echo ""
     end
-end
-
-
-# helper: is TCP port open?
-function __port_open
-    set -l host $argv[1]
-    set -l port $argv[2]
-
-    ssh -p $port -o ConnectTimeout=1 -o StrictHostKeyChecking=no \
-        -o BatchMode=yes -o NumberOfPasswordPrompts=0 -q $host exit \
-        >/dev/null 2>&1
-    test $status -ne 255  # 255 usually = network/resolve failure
-    return $status
-
 end
 
 
@@ -149,23 +135,13 @@ end
 
 #### Local pip
 if test -d $HOME/.local/bin
-    set PATH $PATH $HOME/.local/bin
+    set PATH $HOME/.local/bin $PATH
 end
 
 
 #### CLOUDSDK config
 # New auth plugin for gcloud as of kube V1.26
 set USE_GKE_GCLOUD_AUTH_PLUGIN True
-
-
-#### Choose DOCKER_HOST
-if __port_open dockerhost-lab.nexus 22
-    set -gx DOCKER_HOST ssh://dockerhost-lab.nexus
-else if ps aux | grep -P "qemu-system-x86_64.+2222" | grep -v grep > /dev/null
-    set -gx DOCKER_HOST ssh://dockerhost-vm.localhost
-else
-    set -e DOCKER_HOST
-end
 
 
 #### Interactive
