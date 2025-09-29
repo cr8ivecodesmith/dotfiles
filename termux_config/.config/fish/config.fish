@@ -69,26 +69,31 @@ function fish_prompt
     set -l ven  (__venv_name)
 
     # Line 1: ╭─[ user ICON host ] [ cwd ] *venv* *vcs*
-    echo -n $bold$orange'╭─'$blue'['$cyan$uname$orange $icon $cyan$host$blue']'$reset' '
-    echo -n $blue'['$yellow$cwd$blue']'$reset' '
+    #echo -n $bold$orange'╭─'$blue'['$cyan$uname$orange $icon $cyan$host$blue']'$reset' '
+    #echo -n $bold$orange'╭─'$blue'['$orange$icon$blue']'$reset' '
+    #echo -n $blue'['$orange$icon$blue']'$reset' '
+    #echo -n $blue'['$yellow$cwd$blue']'$reset' '
+    echo -n $blue'['$orange$icon' '$yellow$cwd$blue']'$reset' '
     echo -n $blue$ven $reset
     echo -n $blue$vcs $reset
 
     # Line 2: ╰─❯ 
     echo $reset' '
-    echo -n $bold$orange'╰─❯ '$reset
+    #echo -n $bold$orange'╰─❯ '$reset
+    echo -n $bold$orange'❯ '$reset
 end
 
 
 function fish_greeting
     if type -q fortune
-        if fortune -v 2>&1 | grep -q "fortune-mod"
-            fortune -as
-        else
-            fortune
+        set r (random)
+        if test (math "$r % 3") -eq 0
+            if fortune -v 2>&1 | grep -q "fortune-mod"
+                fortune -as
+            else
+                fortune
+            end
         end
-    else
-        echo ""
     end
 end
 
