@@ -143,10 +143,21 @@ set paths_to_append /usr/sbin /sbin
 
 # Loop over each path
 for path in $paths_to_append
-    # Check if the PATH already contains the current path
-    if not contains $path $PATH
+    # Check if path exists and if the PATH already contains the current path
+    if test -d $path; and not contains $path $PATH
         # If not, append the path to the PATH variable
         set -gx PATH $PATH $path
+    end
+end
+
+set paths_to_prepend /opt/matt/llama.cpp/build/bin
+
+# Loop over each path
+for path in $paths_to_prepend
+    # Check if path exists and if the PATH already contains the current path
+    if test -d $path; and not contains $path $PATH
+        # If not, prepend the path to the PATH variable
+        set -gx PATH $path $PATH
     end
 end
 
@@ -159,15 +170,15 @@ end
 
 
 #### pyenv config
-if test -d $HOME/.pyenv/bin; and test -d $HOME/.pyenv/plugins/pyenv-virtualenv
-    # Enable pyenv autocompletion
-    if type -q pyenv
-        status --is-interactive; and source (pyenv init -|psub)
-
-        # Enable auto activation of pyenv virtualenvs
-        status --is-interactive; and source (pyenv virtualenv-init -|psub)
-    end
-end
+#if test -d $HOME/.pyenv/bin; and test -d $HOME/.pyenv/plugins/pyenv-virtualenv
+#    # Enable pyenv autocompletion
+#    if type -q pyenv
+#        status --is-interactive; and source (pyenv init -|psub)
+#
+#        # Enable auto activation of pyenv virtualenvs
+#        status --is-interactive; and source (pyenv virtualenv-init -|psub)
+#    end
+#end
 
 
 #### Local pip

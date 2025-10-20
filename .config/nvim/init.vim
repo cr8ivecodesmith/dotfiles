@@ -151,13 +151,10 @@ if !empty(glob(expand("~/.local/share/nvim/site/autoload")))
         Plug 'Konfekt/FastFold'
         Plug 'zhimsel/vim-stay'
         Plug 'sirtaj/vim-openscad'
-        Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-        Plug 'deoplete-plugins/deoplete-jedi'
-        Plug 'davidhalter/jedi-vim'
 
-        " Note: I probably should stop using these...
-        " Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
-        " Plug 'python-mode/python-mode', { 'branch': 'last-py2-support' }
+        " Note: Requires a running llama.cpp server
+        Plug 'ggml-org/llama.vim'
+
     call plug#end()
 endif
 
@@ -321,62 +318,6 @@ endif
 " endif
 " ##### END TMUXLINE PLUGIN SETTINGS
 
-" ##### DEOPLETE PLUGIN SETTINGS
-if !empty(glob(expand("~/.local/share/nvim/plugged/deoplete.vim")))
-    let g:deoplete#enable_at_startup = 1
-endif
-if !empty(glob(expand("~/.local/share/nvim/plugged/deoplete-jedi")))
-    let g:deoplete#sources#jedi#show_docstring = 1
-endif
-" ##### END DEOPLETE PLUGIN SETTINGS
-
-" ##### JEDI PLUGIN SETTINGS
-if !empty(glob(expand("~/.local/share/nvim/plugged/jedi-vim")))
-    " Ensure compatibility with deoplete
-    let g:jedi#completions_enabled = 0
-
-    let g:jedi#use_splits_not_buffers = "left"
-    let g:jedi#use_tabs_not_buffers = 1
-    let g:jedi#popup_on_dot = 0
-    " let g:jedi#popup_select_first = 0
-    let g:jedi#show_call_signatures = "2"
-endif
-" ##### END JEDI PLUGIN SETTINGS
-
-" ##### PYTHON-MODE PLUGIN SETTINGS
-" if !empty(glob(expand("~/.local/share/nvim/plugged/python-mode")))
-"     let g:pymode_python = 'python3'
-"     let g:pymode_folding = 0
-" 
-"     let g:pymode_motion = 1
-" 
-"     let g:pymode_doc = 1
-"     let g:pymode_doc_bind = 'K'
-" 
-"     let g:pymode_run = 1
-"     let g:pymode_run_bind = '<leader>r'
-" 
-"     let g:pymode_breakpoint = 1
-"     let g:pymode_breakpoint_bind = '<leader>b'
-"     let g:pymode_breakpoint_cmd = ''  " Empty for auto-detect
-" 
-"     let g:pymode_lint = 1
-"     let g:pymode_lint_ignore = ['E121', 'E123' , 'E126', 'E226', 'E24', 'E704', 'E402', 'E501', 'N806', 'N802', 'W503',]
-"     " let g:pymode_lint_select = ['E501', 'W0011', 'W430']
-"     let g:pymode_lint_options_mccabe = { 'complexity': 12 }
-" 
-"     let g:pymode_rope = 1
-"     let g:pymode_rope_completion = 1
-"     let g:pymode_rope_complete_on_dot = 1
-"     let g:pymode_rope_organize_imports_bind = '<C-c>ro'
-"     let g:pymode_rope_show_doc_bind = '<C-c>d'
-"     let g:pymode_rope_regenerate_on_write = 1
-"     let g:pymode_rope_goto_definition_bind = '<C-c>g'
-"     let g:pymode_rope_rename_bind = '<C-c>rr'
-"     let g:pymode_rope_rename_module_bind = '<C-c>r1r'
-" endif
-" ##### END PYTHON-MODE PLUGIN SETTINGS
-
 " ##### SIMPYL-FOLD PLUGIN SETTINGS
 if !empty(glob(expand("~/.local/share/nvim/plugged/SimpylFold")))
     let g:SimpylFold_docstring_preview = 0
@@ -397,3 +338,12 @@ if !empty(glob(expand("~/.local/share/nvim/plugged/vim-stay")))
     set viewoptions=cursor,folds,slash,unix
 endif
 " ##### END VIM-STAY PLUGIN SETTINGS
+
+" ##### LLAMA.VIM PLUGIN SETTINGS
+if !empty(glob(expand("~/.local/share/nvim/plugged/llama.vim")))
+    " NOTE: Somehow this variable is not being picked up, so I'm disabling the
+    " setting for now. Keep using the default endpoint: http://127.0.0.1:8012/infill
+    " let g:llama_config.show_info = v:false
+    " let g:llama_config.endpoint = 'http://127.0.0.1:7011/infill'
+endif
+" ##### END LLAMA.VIM PLUGIN SETTINGS
