@@ -6,6 +6,9 @@
 .python-version
 __pycache__
 fish_variables
+fish_plugins
+*fisher*
+*bass*
 log
 
 .vim/bundle/
