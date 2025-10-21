@@ -8,5 +8,4 @@
 .config/nvim/
 
 termux-config/.config/fish/
-termux-config/.ssh/config
 termux-config/.bashrc

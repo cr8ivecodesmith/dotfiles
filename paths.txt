@@ -1,10 +1,12 @@
 .bashrc
-.dircolors
+
 .gitconfig
-.promptline.sh
+
 .tmux.conf
 .tmuxline.sh
-.config/fish/config.fish
-.config/nvim/init.vim
-.local/share/nvim/site/autoload/plug.vim
+.tmux/
 
+.config/nvim/
+.local/share/nvim/
+
+.config/fish/
