@@ -54,10 +54,17 @@ function __venv_name1 --description 'Print active venv/conda env name'
         return 0
     else if set -q VIRTUAL_ENV
         if set -q VIRTUAL_ENV_PROMPT
-            echo '' "($VIRTUAL_ENV_PROMPT)"
+            set name $VIRTUAL_ENV_PROMPT
         else
-            echo '' "("(path basename "$VIRTUAL_ENV")")"
+            set name (path basename "$VIRTUAL_ENV")
         end
+
+        # Truncate to 10 characters and append "..." if longer
+        if test (string length -- "$name") -gt 10
+            set name (string sub -s 1 -l 10 -- "$name")...
+        end
+
+        echo '' "($name)"
         return 0
     end
     return 1

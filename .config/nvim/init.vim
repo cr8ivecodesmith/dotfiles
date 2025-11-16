@@ -152,6 +152,8 @@ if !empty(glob(expand("~/.local/share/nvim/site/autoload")))
         Plug 'zhimsel/vim-stay'
         Plug 'sirtaj/vim-openscad'
 
+        Plug 'github/copilot.vim'
+
         " Note: Requires a running llama.cpp server
         Plug 'ggml-org/llama.vim'
 
