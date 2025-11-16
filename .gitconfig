@@ -8,9 +8,8 @@
 [push]
     default = simple
 
-[merge]
-	tool = meld
 [pull]
 	rebase = false
+
 [init]
 	defaultBranch = main

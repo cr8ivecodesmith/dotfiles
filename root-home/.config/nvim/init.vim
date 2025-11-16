@@ -123,11 +123,11 @@ noremap <Leader>t :Vex<CR>
 " Show current directory
 noremap <Leader>p :pwd<CR>
 
-" Quit
-noremap <Leader>qq :q<CR>
+" Quit and save
+noremap <Leader>x :x<CR>
 
-" Execute current Python file
-noremap <Leader>xP :!python %:p<CR>
+" Quit
+noremap <Leader>qq :q!<CR>
 
 
 " ##### END LEADER SHORTCUTS SETTINGS

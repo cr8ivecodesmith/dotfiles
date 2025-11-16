@@ -1,12 +1,11 @@
-.bashrc
-
 .gitconfig
 
 .tmux.conf
 .tmuxline.sh
 .tmux/
 
-.config/nvim/
 .local/share/nvim/
+.config/nvim/
 
-.config/fish/
+termux-config/.config/fish/
+termux-config/.bashrc

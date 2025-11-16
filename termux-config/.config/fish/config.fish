@@ -130,59 +130,54 @@ set paths_to_append /usr/sbin /sbin
 
 # Loop over each path
 for path in $paths_to_append
-    # Check if the PATH already contains the current path
-    if not contains $path $PATH
+    # Check if path exists and if the PATH already contains the current path
+    if test -d $path; and not contains $path $PATH
         # If not, append the path to the PATH variable
         set -gx PATH $PATH $path
     end
 end
 
+set paths_to_prepend \
+    $HOME/.local/bin \
+    $HOME/.codex-cli-env/bin \
+    $HOME/.opt/llama.cpp/bin/
 
-#### Local pip
-if test -d $HOME/.local/bin
-    set PATH $HOME/.local/bin $PATH
+# Loop over each path
+for path in $paths_to_prepend
+    # Check if path exists and if the PATH already contains the current path
+    if test -d $path; and not contains $path $PATH
+        # If not, prepend the path to the PATH variable
+        set -gx PATH $path $PATH
+    end
 end
-
 
 #### CLOUDSDK config
 # New auth plugin for gcloud as of kube V1.26
 set USE_GKE_GCLOUD_AUTH_PLUGIN True
 
 
+#### Huggingface env cache
+set HF_HOME $HOME/Downloads/huggingface
+set HUGGINGFACE_HUB_CACHE $HF_HOME/hub
+
+
 #### Interactive
 if status is-interactive
     # Commands to run in interactive sessions can go here
 
-    #### pyenv config
-    if test -d $HOME/.pyenv/bin; and test -d $HOME/.pyenv/plugins/pyenv-virtualenv
-        pyenv init - fish | source
-        # Enable pyenv autocompletion
-        if type -q pyenv
-            status --is-interactive; and source (pyenv init -|psub)
-
-            # Enable auto activation of pyenv virtualenvs
-            status --is-interactive; and source (pyenv virtualenv-init -|psub)
-        end
+    #### direnv
+    if type -q direnv
+        direnv hook fish | source
     end
 
     #### nvm config
-    #if test -d $HOME/.nvm
-    #    set -gx NVM_DIR $HOME/.nvm
-
-    #    if test -s $NVM_DIR/nvm.sh
-    #        bass source $NVM_DIR/nvm.sh --no-use
-    #    end
-
-    #    if test -s $NVM_DIR/bash_completion
-    #        bass source $NVM_DIR/bash_completion
-    #    end
-    #end
-
-    #### Set codex cli env
-    if test -d $HOME/.codex-cli-env
-        set PATH $HOME/.codex-cli-env/bin $PATH
-        source ~/.codex-cli-env/shell/codexenv.fish
+    if test -d $HOME/.nvm
+        set -Ux nvm_default_version latest
     end
 
+    #### Set codex cli helpers
+    if test -d $HOME/.codex-cli-env
+        source ~/.codex-cli-env/shell/codexenv.fish
+    end
 
 end

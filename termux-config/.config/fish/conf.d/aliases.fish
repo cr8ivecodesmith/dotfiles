@@ -150,6 +150,6 @@ alias speedtest 'curl -s https://raw.githubusercontent.com/noreplyui5/speedtest-
 # Utils
 alias tmux="tmux -2"
 alias mosh='mosh --server "mosh-server new -s -l LANG=en_US.UTF-8"'
-alias docker-lab 'set -gx DOCKER_HOST ssh://dockerhost-lab.nexus'
-alias docker-vm 'set -gx DOCKER_HOST ssh://dockerhost-vm.localhost'
+#alias docker-lab 'set -gx DOCKER_HOST ssh://dockerhost-lab.nexus'
+#alias docker-vm 'set -gx DOCKER_HOST ssh://dockerhost-vm.localhost'
 
