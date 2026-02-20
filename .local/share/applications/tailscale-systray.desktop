@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Tailscale Systray
+Comment=Start the Tailscale tray icon
+Exec=/usr/bin/tailscale systray
+Icon=$HOME/.local/share/icons/tailscale.png
+Terminal=false
+Categories=Network;Utility;
+StartupNotify=false
