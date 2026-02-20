@@ -73,26 +73,6 @@ xterm*|rxvt*)
     ;;
 esac
 
-# enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
-
-# some more ls aliases
-alias ll='ls -alFh'
-alias la='ls -Ah'
-alias l='ls -CFh'
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
@@ -102,17 +82,6 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
-
-# Personal aliases
-# TODO: Move to a separate alias file
-alias rm='rm -i'
-alias cp='cp -i'
-alias mv='mv -i'
-alias mkdir='mkdir -p'
-alias ..='cd ..'
-alias du='du -h'
-alias df='df -h'
-alias mosh='mosh --server "mosh-server new -s -l LANG=en_US.UTF-8"'
 
 
 # enable programmable completion features (you don't need to enable
@@ -232,6 +201,12 @@ done
 
 # New auth plugin for gcloud as of kube V1.26
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
+# Silence direnv loading messages (if direnv is used)
+export DIRENV_LOG_FORMAT=""
+
+# Turn off Python/virtualenv prompt modifications (we handle it in our custom prompt)
+export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 
 #### Local pip
