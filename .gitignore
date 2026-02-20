@@ -17,7 +17,6 @@ log
 .local/share/nvim/plugged/
 .local/share/nvim/shada/
 .local/share/nvim/site/
-.local/share/nvim/site/autoload/plug.vim
 .local/share/nvim/view/
 fish/conf.d
 fishd.*          # machine-specific universal variables
