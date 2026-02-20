@@ -37,6 +37,8 @@ function __distro_icon
             echo ""
         case nixos
             echo ""
+        case pop
+            echo ""
         case '*'
             echo ""
     end
@@ -45,29 +47,6 @@ end
 
 function __user_name
     echo (whoami)
-end
-
-
-function __venv_name1 --description 'Print active venv/conda env name'
-    if set -q CONDA_DEFAULT_ENV
-        echo '' "($CONDA_DEFAULT_ENV)"
-        return 0
-    else if set -q VIRTUAL_ENV
-        if set -q VIRTUAL_ENV_PROMPT
-            set name $VIRTUAL_ENV_PROMPT
-        else
-            set name (path basename "$VIRTUAL_ENV")
-        end
-
-        # Truncate to 10 characters and append "..." if longer
-        if test (string length -- "$name") -gt 10
-            set name (string sub -s 1 -l 10 -- "$name")...
-        end
-
-        echo '' "($name)"
-        return 0
-    end
-    return 1
 end
 
 

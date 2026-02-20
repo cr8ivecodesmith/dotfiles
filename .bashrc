@@ -38,27 +38,158 @@ fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color) color_prompt=yes;;
+    xterm-color|*-256color) color_prompt=yes;;
 esac
 
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+# Enable color prompt
+force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-        # We have color support; assume it's compliant with Ecma-48
-        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-        # a case would tend to support setf rather than setaf.)
         color_prompt=yes
     else
         color_prompt=
     fi
 fi
 
+# Function to get distro icon
+__distro_icon() {
+    local id="unknown"
+    if [ -r /etc/os-release ]; then
+        id=$(grep '^ID=' /etc/os-release | head -n1 | sed 's/^ID=//' | tr -d '"')
+    fi
+    
+    case "$id" in
+        kali|ubuntu)
+            echo ""
+            ;;
+        arch)
+            echo ""
+            ;;
+        debian)
+            echo ""
+            ;;
+        fedora)
+            echo ""
+            ;;
+        alpine)
+            echo ""
+            ;;
+        void)
+            echo ""
+            ;;
+        opensuse*|sles)
+            echo ""
+            ;;
+        gentoo)
+            echo ""
+            ;;
+        nixos)
+            echo ""
+            ;;
+        pop)
+            echo ""
+            ;;
+        *)
+            echo ""
+            ;;
+    esac
+}
+
+# Function to get virtualenv name
+__venv_name() {
+    if [ -n "$CONDA_DEFAULT_ENV" ]; then
+        echo "($CONDA_DEFAULT_ENV)"
+        return 0
+    elif [ -n "$VIRTUAL_ENV" ]; then
+        local venv_dir=$(basename "$VIRTUAL_ENV")
+        local name=""
+        
+        # Respect explicit prompt if present
+        if [ -n "$VIRTUAL_ENV_PROMPT" ]; then
+            name="$VIRTUAL_ENV_PROMPT"
+        # If the venv directory is a generic name, use the project folder
+        elif [[ "$venv_dir" =~ ^(env|venv|\.env|\.venv)$ ]]; then
+            local parent=$(basename $(dirname "$VIRTUAL_ENV"))
+            # If venvs are centralized, fall back to CWD name
+            if [[ "$parent" =~ ^(\.venvs|venvs|virtualenvs|\.virtualenvs)$ ]]; then
+                parent=$(basename "$(pwd)")
+            fi
+            name="$parent"
+        else
+            name="$venv_dir"
+        fi
+        
+        echo '' "($name)"
+        return 0
+    fi
+    return 1
+}
+
+# Function to shorten path (similar to fish's prompt_pwd)
+__prompt_pwd() {
+    local dir="${PWD/#$HOME/\~}"
+    
+    # If we're in home directory, just show ~
+    if [ "$dir" = "~" ]; then
+        echo "~"
+        return
+    fi
+    
+    # Split path into array
+    IFS='/' read -ra parts <<< "$dir"
+    local result=""
+    local last_index=$((${#parts[@]} - 1))
+    
+    for i in "${!parts[@]}"; do
+        if [ $i -eq 0 ]; then
+            # First element (empty for absolute paths, or ~ for home)
+            if [ "${parts[$i]}" = "~" ]; then
+                result="~"
+            fi
+        elif [ $i -eq $last_index ]; then
+            # Last element - show full name
+            if [ -n "$result" ]; then
+                result="$result/${parts[$i]}"
+            else
+                result="/${parts[$i]}"
+            fi
+        else
+            # Middle elements - abbreviate to first letter
+            local first_char="${parts[$i]:0:1}"
+            if [ -n "$result" ]; then
+                result="$result/$first_char"
+            else
+                result="/$first_char"
+            fi
+        fi
+    done
+    
+    echo "$result"
+}
+
+# Custom two-line prompt matching fish
 if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    # Colors (not local, used in PS1)
+    Blue='\[\033[01;34m\]'
+    Yellow='\[\033[01;33m\]'
+    Orange='\[\033[38;5;215m\]'
+    Green='\[\033[01;32m\]'
+    Reset='\[\033[0m\]'
+    Bold='\[\033[1m\]'
+    
+    # Line 1: [icon cwd] (venv) (git)
+    PS1='${debian_chroot:+($debian_chroot)}'
+    PS1+="${Blue}[${Green}\$(\__distro_icon) ${Yellow}\$(\__prompt_pwd)${Blue}]${Reset} "
+    PS1+="${Blue}\$(\__venv_name)${Reset} "
+    
+    # Git status - check if we're in a git repo
+    if command -v git &> /dev/null; then
+        PS1+="${Blue}\$(git rev-parse --git-dir &>/dev/null && echo -n \" (\$(git symbolic-ref --short HEAD 2>/dev/null || git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD 2>/dev/null))\" || echo \"\")${Reset} "
+    fi
+    
+    # Line 2: ❯ (Green in bash, Orange in fish)
+    PS1+="\n${Bold}${Green}❯${Reset} "
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -148,26 +279,6 @@ if [ -f ~/sys/bin/load_ssh_identities ]; then
     source ~/sys/bin/load_ssh_identities
 fi
 
-# Custom prompt settings
-function get_env_status() {
-    # Adds a new prompt line to show active virtualenv and git branch
-    git_status=$(__git_ps1 "%s")
-    #if [[ $VIRTUAL_ENV && ${VIRTUAL_ENV-_} && ${git_status-_} ]]
-    #then
-    #     venv=`basename "$VIRTUAL_ENV"`
-    #     echo -e "\n${Yellow}» env:${NC} ${Blue}${venv}${NC} ${Yellow}» git:${NC} ${Blue}$git_status${NC}"
-    #elif [[ $VIRTUAL_ENV && ${VIRTUAL_ENV-_} ]]
-    #then
-    #     venv=`basename "$VIRTUAL_ENV"`
-    #     echo -e "\n${Yellow}» env:${NC} ${Blue}$venv${NC}"
-    if [[ ${git_status-_} ]]
-    then
-         echo -e "\n${Yellow}» git:${NC} ${Blue}$git_status${NC}"
-    else
-        echo -e ""
-    fi
-}
-
 
 ##### Update PATH
 # Define the paths you want to append
@@ -208,11 +319,6 @@ export DIRENV_LOG_FORMAT=""
 # Turn off Python/virtualenv prompt modifications (we handle it in our custom prompt)
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-
-#### Local pip
-if [ -d $HOME/.local/bin ]; then
-    export PATH="$HOME/.local/bin:$PATH"
-fi
 
 #### NPM config
 if [ -d $HOME/.npm-packages/bin ]; then

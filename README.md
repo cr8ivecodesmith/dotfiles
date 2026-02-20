@@ -17,13 +17,18 @@ In pursuit of config happyness
 - Copy root vim for QoL: `sudo cp -rvf root_home/.* /root/`
 
 
-## Solarizing Gnome terminal in Ubuntu
-- https://github.com/Anthony25/gnome-terminal-colors-solarized
-- https://github.com/seebi/dircolors-solarized
-
-
 ## Requirements
 
+Ensure these are installed in your system.
+
 ```bash
-sudo apt install tree curl eza fzf ripgrep bat imagemagick
+sudo apt install tree curl eza fzf ripgrep bat imagemagick htop tmux make
 ```
+
+**Other things to install:**
+
+- Just
+- UV
+- Rust
+- Docker
+- Build Tools
