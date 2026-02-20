@@ -28,6 +28,7 @@ fish_history     # command history
 .tmux/plugins/
 .fonts/PragmataPro*
 .fonts/Iosevka*
+fish_frozen_theme.fish
 
 projects/*
 sys/tmp/*
