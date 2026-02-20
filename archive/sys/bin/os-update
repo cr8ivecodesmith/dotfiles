@@ -1,8 +1,0 @@
-#!/bin/bash
-
-
-sudo apt update; \
-    sudo apt upgrade -y; \
-    sudo apt autoremove --purge -y; \
-    sudo flatpak update; \
-    sudo snap refresh

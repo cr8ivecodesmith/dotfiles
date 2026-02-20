@@ -1,3 +1,0 @@
-#!/bin/bash
-### Force remove all containers ###
-docker ps -aq | xargs docker rm -f
