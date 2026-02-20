@@ -199,19 +199,6 @@ function get_env_status() {
     fi
 }
 
-# if [ -f $HOME/.promptline.sh ]; then
-#     chmod +x $HOME/.promptline.sh
-#     source $HOME/.promptline.sh
-# else
-#     PROMPT_COMMAND='r0=$?;if [ -z "$NP" ]; then i0=0;s0="";while [ "$i0" -lt "${COLUMNS:-80}" ];do s0="-$s0";i0=$[$i0+1];done;builtin echo -ne "\n$s0\E(B\E[0m"; [ $r0 == 0 ] && builtin echo -ne "\e[1A\e[32m[ok]" || builtin echo -ne "\e[1A\e[31m[fail]";else unset NP;fi;history -a'
-#     NP=0
-# 
-#     PS1='$(get_env_status "%s")
-#     \[\e[0;33m\][\D{%Y-%m-%d %H:%M}]\[\e[m\]  \[\e[0;35m\]\w\[\e[m\]
-#     \[\e[0;36m\]\u.\h\[\e[m\]:\[\e[0;35m\]\W\[\e[m\] \[\e[0;36m\]>\[\e[m\] '
-# 
-#     export PROMPT_COMMAND NP PS1
-# fi
 
 ##### Update PATH
 # Define the paths you want to append
@@ -227,55 +214,25 @@ do
     fi
 done
 
-##### JAVA config
-jdk_ver="8"
-if [ -d /usr/lib/jvm/java-$jdk_ver-openjdk-amd64/bin ]; then
-    export JAVA_HOME=/usr/lib/jvm/java-$jdk_ver-openjdk-amd64
-    export PATH=$JAVA_HOME/bin:$PATH
-fi
+# Define the paths you want to prepend
+paths_to_prepend=("$HOME/.local/bin" "$HOME/.cargo/bin")
 
-
-##### Android SDK config
-#export ANDROID_HOME=$HOME/Android/Sdk
-#export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH
+# Loop over each path
+for path in "${paths_to_prepend[@]}"
+do
+    # Check if the PATH already contains the current path
+    if [[ ! $PATH =~ (^|:)$path(:|$) ]]; then
+        # If not, prepend the path to the PATH variable
+        export PATH=$path:$PATH
+    fi
+done
 
 
 ##### Google Cloud SDK config
-# The next line updates PATH for the Google Cloud SDK.
-#if [ -f $HOME/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc ]; then
-#  source '$HOME/Downloads/gcloud_sdk/google-cloud-sdk/path.bash.inc'
-#fi
-
-# The next line enables shell command completion for gcloud.
-#if [ -f $HOME/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc ]; then
-#  source '$HOME/Downloads/gcloud_sdk/google-cloud-sdk/completion.bash.inc'
-#fi
 
 # New auth plugin for gcloud as of kube V1.26
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
-
-##### Elixir config
-#test -s "$HOME/.kiex/scripts/kiex" && source "$HOME/.kiex/scripts/kiex"
-#export PATH="$HOME/.rbenv/bin:$PATH"
-#eval "$(rbenv init -)"
-#export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
-
-
-##### pyenv config
-# Set PATH variables
-if [[ -d $HOME/.pyenv/bin && -d $HOME/.pyenv/plugins/pyenv-virtualenv ]]; then
-   export PYENV_ROOT="$HOME/.pyenv"
-   export PATH="$PYENV_ROOT/bin:$PATH"
-
-   # Enable pyenv autocompletion
-   if command -v pyenv 1>/dev/null 2>&1;then
-       eval "$(pyenv init -)"
-
-       # Enable auto activation of pyenv virtualenvs
-       eval "$(pyenv virtualenv-init -)"
-   fi
-fi
 
 #### Local pip
 if [ -d $HOME/.local/bin ]; then
@@ -295,40 +252,3 @@ if [ -d $HOME/.nvm ]; then
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 fi
-
-
-#### Rust binaries
-if [ -d $HOME/.cargo/bin ]; then
-    export PATH="$HOME/.cargo/bin:$PATH"
-fi
-
-
-#### DEVKIT Pro (3DS Homebrew)
-if [ -d /opt/devkitpro ]; then
-    export DEVKITPRO=/opt/devkitpro
-    export DEVKITARM=$DEVKITPRO/devkitARM
-    export PATH=$PATH:$DEVKITARM/bin
-fi
-
-
-#### Docker Daemon on Android
-if ps aux | grep -P "qemu-system-x86_64.+2375" | grep -v grep > /dev/null; then
-  export DOCKER_HOST=tcp://127.0.0.1:2375
-fi
-
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-# __conda_setup="$('/home/matt/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-# if [ $? -eq 0 ]; then
-#     eval "$__conda_setup"
-# else
-#     if [ -f "/home/matt/anaconda3/etc/profile.d/conda.sh" ]; then
-#         . "/home/matt/anaconda3/etc/profile.d/conda.sh"
-#     else
-#         export PATH="/home/matt/anaconda3/bin:$PATH"
-#     fi
-# fi
-# unset __conda_setup
-# <<< conda initialize <<<
-

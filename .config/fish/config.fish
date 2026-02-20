@@ -119,16 +119,13 @@ function fish_prompt
     set -l vcs  ''(fish_vcs_prompt)
     set -l ven  (__venv_name)
 
-    # Line 1: ╭─[ user ICON host ] [ cwd ] *venv* *vcs*
-    #echo -n $bold$orange'╭─'$blue'['$cyan$uname $orange$icon $cyan$host$blue']'$reset' '
-    #echo -n $blue'['$yellow$cwd$blue']'$reset' '
+    # Line 1:
     echo -n $blue'['$orange$icon' '$yellow$cwd$blue']'$reset' '
     echo -n $blue$ven $reset
     echo -n $blue$vcs $reset
 
-    # Line 2: ╰─❯ 
+    # Line 2: 
     echo $reset' '
-    #echo -n $bold$orange'╰─❯ '$reset
     echo -n $bold$orange'❯ '$reset
 end
 
@@ -157,7 +154,7 @@ for path in $paths_to_append
     end
 end
 
-set paths_to_prepend /opt/matt/llama.cpp/build/bin
+set paths_to_prepend $HOME/.local/bin $HOME/.cargo/bin
 
 # Loop over each path
 for path in $paths_to_prepend
@@ -166,31 +163,6 @@ for path in $paths_to_prepend
         # If not, prepend the path to the PATH variable
         set -gx PATH $path $PATH
     end
-end
-
-
-##### JAVA config
-if test -d /usr/lib/jvm/java-8-openjdk-amd64/bin
-    set JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
-    set PATH $JAVA_HOME/bin $PATH
-end
-
-
-#### pyenv config
-#if test -d $HOME/.pyenv/bin; and test -d $HOME/.pyenv/plugins/pyenv-virtualenv
-#    # Enable pyenv autocompletion
-#    if type -q pyenv
-#        status --is-interactive; and source (pyenv init -|psub)
-#
-#        # Enable auto activation of pyenv virtualenvs
-#        status --is-interactive; and source (pyenv virtualenv-init -|psub)
-#    end
-#end
-
-
-#### Local pip
-if test -d $HOME/.local/bin
-    set PATH $HOME/.local/bin $PATH 
 end
 
 
@@ -205,52 +177,6 @@ if test -d $HOME/.nvm
 end
 
 
-#### Rust binaries
-if test -d $HOME/.cargo/bin
-    set PATH $HOME/.cargo/bin $PATH
-end
-
-
-#### DEVKIT Pro (3DS Homebrew)
-if test -d /opt/devkitpro
-    set DEVKITPRO /opt/devkitpro
-    set DEVKITARM $DEVKITPRO/devkitARM
-    set PATH $DEVKITARM/bin $PATH
-end
-
-
-#### NGAGESDK
-if test -d $HOME/projects/oss/ngage-toolchain
-    set NGAGESDK $HOME/projects/oss/ngage-toolchain
-end
-
-
 #### CLOUDSDK config
-# The next line updates PATH for the Google Cloud SDK.
-# if [ -f '/home/matt/Apps/google-cloud-sdk/path.fish.inc' ]; . '/home/matt/Apps/google-cloud-sdk/path.fish.inc'; end
-
 # New auth plugin for gcloud as of kube V1.26
 set USE_GKE_GCLOUD_AUTH_PLUGIN True
-
-
-#### Docker Daemon on Android
-# Consider using docker context instead
-if ps aux | grep -P "qemu-system-x86_64.+2375" | grep -v grep > /dev/null
-    set -gx DOCKER_HOST tcp://127.0.0.1:2375
-end
-
-
-#### Codex CLI Env
-if test -d $HOME/.codex-cli-env/bin
-    set PATH $HOME/.codex-cli-env/bin $PATH
-    source $HOME/.codex-cli-env/shell/codexenv.fish
-end
-
-
-#### CONDA config
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-# if test -d /home/matt/anaconda3/bin
-#     eval /home/matt/anaconda3/bin/conda "shell.fish" "hook" $argv | source
-# end
-# <<< conda initialize <<<
