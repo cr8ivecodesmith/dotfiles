@@ -159,3 +159,9 @@ end
 #### CLOUDSDK config
 # New auth plugin for gcloud as of kube V1.26
 set USE_GKE_GCLOUD_AUTH_PLUGIN True
+
+
+#### direnv hook
+if type -q direnv
+    direnv hook fish | source
+end

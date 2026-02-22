@@ -1,0 +1,16 @@
+polkit.addRule(function(action, subject) {
+  var allowed = [
+    "org.freedesktop.login1.hibernate",
+    "org.freedesktop.login1.handle-hibernate-key",
+    "org.freedesktop.login1.handle-lid-switch-hibernate"
+  ];
+
+  var isAdmin = subject.isInGroup("sudo") || subject.isInGroup("wheel");
+
+  if (allowed.indexOf(action.id) >= 0 &&
+      isAdmin &&
+      subject.local === true &&
+      subject.active === true) {
+    return polkit.Result.YES;
+  }
+});
