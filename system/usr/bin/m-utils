@@ -12,11 +12,20 @@ from pathlib import Path
 from typing import Dict, Any
 
 try:
-    import tomli
+    import tomllib  # Python 3.11+ built-in
+except ImportError:
+    try:
+        import tomli as tomllib  # Fallback for Python < 3.11
+    except ImportError:
+        print("Error: TOML library not available.", file=sys.stderr)
+        print("For Python < 3.11, install with: pip install tomli tomli-w", file=sys.stderr)
+        sys.exit(1)
+
+try:
     import tomli_w
 except ImportError:
-    print("Error: Required packages not installed.", file=sys.stderr)
-    print("Install with: pip install tomli tomli-w", file=sys.stderr)
+    print("Error: tomli_w not installed (required for writing config).", file=sys.stderr)
+    print("Install with: pip install tomli-w", file=sys.stderr)
     sys.exit(1)
 
 
@@ -32,7 +41,7 @@ def load_config() -> Dict[str, Any]:
         return {}
     
     with open(CONFIG_FILE, "rb") as f:
-        return tomli.load(f)
+        return tomllib.load(f)
 
 
 def save_config(config: Dict[str, Any]) -> None:
