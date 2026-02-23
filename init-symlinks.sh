@@ -339,6 +339,32 @@ main() {
   print_header "$path_file"
   process_path_file "$path_file"
   
+  # Initialize .m-utils from template if it doesn't exist
+  echo "----------------------------------------"
+  echo "Checking m-utils configuration..."
+  local m_utils_target="$HOME/.m-utils"
+  local m_utils_template="${SCRIPT_DIR}/.m-utils-template"
+  
+  if [ ! -e "$m_utils_target" ]; then
+    if [ -f "$m_utils_template" ]; then
+      echo "Creating ~/.m-utils from template..."
+      if cp "$m_utils_template" "$m_utils_target"; then
+        echo "✓ Config file created at ~/.m-utils"
+        echo "  Edit this file to customize your m-utils settings."
+        echo "  This file is .gitignored and contains your personal configuration."
+      else
+        echo "✗ Failed to copy template. You can manually copy it later:"
+        echo "  cp ${m_utils_template} ${m_utils_target}"
+      fi
+    else
+      echo "⚠ Template file not found: $m_utils_template"
+      echo "  m-utils will use defaults until you create ~/.m-utils"
+    fi
+  else
+    echo "✓ Config file already exists at ~/.m-utils"
+  fi
+  
+  echo "========================================"
   echo "Symlink creation process completed successfully."
 }
 

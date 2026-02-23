@@ -254,6 +254,26 @@ print_footer() {
   echo "Rollback process completed."
 }
 
+cleanup_environment() {
+  local env_file="/etc/environment"
+  
+  echo "----------------------------------------"
+  echo "Cleaning up m-utils environment variables..."
+  
+  if grep -q "MUTILS_DOTFILES_DIR" "$env_file" 2>/dev/null; then
+    if [ "$DRY_RUN" = true ]; then
+      echo "[DRY RUN] Would remove MUTILS_DOTFILES_DIR from /etc/environment"
+    else
+      # Remove the line containing MUTILS_DOTFILES_DIR
+      sed -i '/MUTILS_DOTFILES_DIR/d' "$env_file"
+      echo "✓ Removed MUTILS_DOTFILES_DIR from /etc/environment"
+      echo "  Note: Restart shells for change to take effect"
+    fi
+  else
+    echo "✓ No m-utils environment variables found"
+  fi
+}
+
 main() {
   # Parse arguments (not in subshell to allow usage() to exit properly)
   while [[ "$#" -gt 0 ]]; do
@@ -319,6 +339,9 @@ main() {
       echo ""
     fi
     rollback_all_backups
+    
+    # Clean up m-utils environment variables
+    cleanup_environment
   fi
   
   print_footer

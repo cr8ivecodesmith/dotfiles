@@ -1,0 +1,76 @@
+# M-Utils Configuration File
+# This file stores settings for the m-utils system utility collection.
+# It will be automatically created and updated by m-utils commands.
+
+[laptop.lid_close]
+# Lid close behavior configuration
+# Each power mode (battery/ac) can have different settings
+#
+# Format:
+# [power_mode]
+#   action = "sleep"
+#   value = false | 0 | <minutes>
+#
+# Where:
+#   false = disabled (do nothing when lid closes)
+#   0 = immediate suspend
+#   <minutes> = delay in minutes before suspending
+#
+# Example configurations:
+# battery = { action = "sleep", value = 15 }  # Sleep after 15 minutes on battery
+# ac = { action = "sleep", value = false }    # Don't sleep on AC power
+
+
+[firewall]
+# UFW Firewall configuration
+# Controls which ports are accessible for remote development and SSH access
+#
+# Default policies (always applied):
+#   incoming = "deny"   # Deny all incoming by default
+#   outgoing = "allow"  # Allow all outgoing by default
+#
+# Port rules format:
+# [[firewall.rules]]
+# port = 22 | "22:80" | "8000:8999"
+# protocol = "tcp" | "udp" | "any"
+# action = "allow" | "deny" | "limit"
+# comment = "Optional description"
+#
+# Examples:
+# [[firewall.rules]]
+# port = 22
+# protocol = "tcp"
+# action = "limit"  # Rate-limit SSH connections
+# comment = "SSH access"
+#
+# [[firewall.rules]]
+# port = "5000:5999"
+# protocol = "tcp"
+# action = "allow"
+# comment = "Development servers"
+#
+# [[firewall.rules]]
+# port = "8000:8999"
+# protocol = "tcp"
+# action = "allow"
+# comment = "Alternative dev ports"
+
+# Default configuration - SSH access with rate limiting
+[[firewall.rules]]
+port = 22
+protocol = "tcp"
+action = "limit"
+comment = "SSH access with rate limiting"
+
+# Common development server ports
+[[firewall.rules]]
+port = "5000:5999"
+protocol = "tcp"
+action = "allow"
+comment = "Development servers (Flask, etc.)"
+
+[[firewall.rules]]
+port = "8000:8999"
+protocol = "tcp"
+action = "allow"
+comment = "Development servers (Django, Node, etc.)"

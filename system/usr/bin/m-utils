@@ -30,6 +30,16 @@ except ImportError:
 
 
 CONFIG_FILE = Path.home() / ".m-utils"
+
+# Get template location from environment variable or fall back to relative path
+# MUTILS_DOTFILES_DIR should be set by init-system.sh
+if "MUTILS_DOTFILES_DIR" in os.environ:
+    CONFIG_TEMPLATE = Path(os.environ["MUTILS_DOTFILES_DIR"]) / ".m-utils-template"
+else:
+    # Fallback: try to find template relative to script location
+    # This works if script is still in dotfiles repo (not copied to /usr/bin yet)
+    CONFIG_TEMPLATE = Path(__file__).resolve().parent.parent.parent / ".m-utils-template"
+
 LOGIND_CONF = Path("/etc/systemd/logind.conf")
 LOGIND_CONF_D = Path("/etc/systemd/logind.conf.d")
 TIMER_DIR = Path("/etc/systemd/system")
@@ -38,14 +48,35 @@ TIMER_DIR = Path("/etc/systemd/system")
 def load_config() -> Dict[str, Any]:
     """Load configuration from TOML file."""
     if not CONFIG_FILE.exists():
-        return {}
+        # Try to create from template
+        if CONFIG_TEMPLATE.exists():
+            print("Info: Creating ~/.m-utils from template...", file=sys.stderr)
+            try:
+                import shutil
+                shutil.copy2(CONFIG_TEMPLATE, CONFIG_FILE)
+                print("✓ Config file created. Edit ~/.m-utils to customize.", file=sys.stderr)
+            except Exception as e:
+                print(f"Warning: Could not copy template: {e}", file=sys.stderr)
+                print("Please manually copy .m-utils-template to ~/.m-utils", file=sys.stderr)
+                return {}
+        else:
+            print("Warning: No config file found at ~/.m-utils", file=sys.stderr)
+            print("Create it from the template or m-utils will use defaults.", file=sys.stderr)
+            return {}
     
-    with open(CONFIG_FILE, "rb") as f:
-        return tomllib.load(f)
+    try:
+        with open(CONFIG_FILE, "rb") as f:
+            return tomllib.load(f)
+    except Exception as e:
+        print(f"Error: Failed to load config file: {e}", file=sys.stderr)
+        return {}
 
 
 def save_config(config: Dict[str, Any]) -> None:
     """Save configuration to TOML file."""
+    # Ensure config directory exists
+    CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    
     with open(CONFIG_FILE, "wb") as f:
         tomli_w.dump(config, f)
 
@@ -341,6 +372,360 @@ def handle_lid_close_status() -> None:
             print("  ✓ AC timer: /etc/systemd/system/m-utils-suspend-ac.timer")
 
 
+def check_ufw_installed() -> bool:
+    """Check if UFW is installed."""
+    result = run_command(["which", "ufw"], check=False)
+    return result.returncode == 0
+
+
+def get_ufw_status() -> Dict[str, Any]:
+    """Get current UFW status and rules."""
+    result = run_command(["ufw", "status", "verbose"], check=False)
+    
+    status = {
+        "enabled": False,
+        "default_incoming": "unknown",
+        "default_outgoing": "unknown",
+        "rules": []
+    }
+    
+    if result.returncode != 0:
+        return status
+    
+    for line in result.stdout.split("\n"):
+        line = line.strip()
+        if "Status:" in line:
+            status["enabled"] = "active" in line.lower()
+        elif "Default:" in line and "incoming" in line.lower():
+            if "deny" in line.lower():
+                status["default_incoming"] = "deny"
+            elif "allow" in line.lower():
+                status["default_incoming"] = "allow"
+        elif "Default:" in line and "outgoing" in line.lower():
+            if "deny" in line.lower():
+                status["default_outgoing"] = "deny"
+            elif "allow" in line.lower():
+                status["default_outgoing"] = "allow"
+    
+    return status
+
+
+def parse_existing_ufw_rules() -> list:
+    """Parse existing UFW rules from 'ufw status numbered'."""
+    result = run_command(["ufw", "status", "numbered"], check=False)
+    
+    if result.returncode != 0:
+        return []
+    
+    rules = []
+    lines = result.stdout.split("\n")
+    
+    for line in lines:
+        line = line.strip()
+        # Skip headers and empty lines
+        if not line or "Status:" in line or "To" in line and "Action" in line:
+            continue
+        
+        # Parse numbered rules like: "[ 1] 22/tcp                     ALLOW IN    Anywhere"
+        if line.startswith("["):
+            try:
+                # Remove the rule number
+                parts = line.split("]", 1)
+                if len(parts) < 2:
+                    continue
+                
+                rule_text = parts[1].strip()
+                
+                # Split by multiple spaces to get fields
+                fields = [f for f in rule_text.split() if f]
+                
+                if len(fields) < 3:
+                    continue
+                
+                # Parse port/protocol
+                port_proto = fields[0]
+                action = fields[1].upper()
+                direction = fields[2].upper() if len(fields) > 2 else "IN"
+                
+                # Only process ALLOW IN and LIMIT IN rules (skip v6 duplicates)
+                if direction == "IN" and action in ["ALLOW", "LIMIT", "DENY"]:
+                    # Parse port and protocol
+                    if "/" in port_proto:
+                        port, protocol = port_proto.split("/", 1)
+                    else:
+                        port = port_proto
+                        protocol = "any"
+                    
+                    # Determine action
+                    if action == "LIMIT":
+                        parsed_action = "limit"
+                    elif action == "ALLOW":
+                        parsed_action = "allow"
+                    else:
+                        parsed_action = "deny"
+                    
+                    rules.append({
+                        "port": port,
+                        "protocol": protocol.lower(),
+                        "action": parsed_action
+                    })
+            
+            except Exception:
+                # Skip malformed lines
+                continue
+    
+    return rules
+
+
+def merge_rules_to_config(existing_rules: list) -> None:
+    """Merge existing UFW rules into the config file."""
+    config = load_config()
+    
+    if "firewall" not in config:
+        config["firewall"] = {}
+    
+    if "rules" not in config["firewall"]:
+        config["firewall"]["rules"] = []
+    
+    # Get existing config rules for comparison
+    config_rules = config["firewall"]["rules"]
+    
+    # Track which rules are new
+    new_rules = []
+    
+    for existing_rule in existing_rules:
+        # Check if this rule already exists in config
+        is_duplicate = False
+        
+        for config_rule in config_rules:
+            # Match on port and protocol
+            config_port = str(config_rule.get("port", ""))
+            config_protocol = config_rule.get("protocol", "tcp")
+            
+            if (config_port == existing_rule["port"] and 
+                config_protocol == existing_rule["protocol"]):
+                is_duplicate = True
+                break
+        
+        if not is_duplicate:
+            new_rules.append(existing_rule)
+    
+    if new_rules:
+        # Add comment for merged rules
+        for rule in new_rules:
+            rule["comment"] = "Merged from existing UFW rule"
+            config["firewall"]["rules"].append(rule)
+        
+        save_config(config)
+        print(f"\n✓ Merged {len(new_rules)} existing rule(s) into ~/.m-utils")
+        for rule in new_rules:
+            print(f"  - {rule['action'].upper()} {rule['port']}/{rule['protocol']}")
+    else:
+        print("\n  No new rules to merge (all existing rules already in config)")
+
+
+def apply_firewall_rules() -> None:
+    """Apply firewall rules from config to UFW."""
+    elevate_if_needed()
+    
+    if not check_ufw_installed():
+        print("Error: UFW is not installed. Install with: sudo apt install ufw", file=sys.stderr)
+        sys.exit(1)
+    
+    config = load_config()
+    firewall_config = config.get("firewall", {})
+    rules = firewall_config.get("rules", [])
+    
+    if not rules:
+        print("Warning: No firewall rules defined in config file", file=sys.stderr)
+        print("Edit ~/.m-utils to add firewall rules")
+        return
+    
+    # Check for existing UFW rules
+    existing_rules = parse_existing_ufw_rules()
+    
+    if existing_rules:
+        print("=" * 50)
+        print("⚠  WARNING: Existing UFW rules detected")
+        print("=" * 50)
+        print(f"\nFound {len(existing_rules)} existing rule(s):")
+        for rule in existing_rules:
+            print(f"  - {rule['action'].upper()} {rule['port']}/{rule['protocol']}")
+        
+        print("\nApplying m-utils firewall configuration will RESET all UFW rules.")
+        print("\nOptions:")
+        print("  [m] Merge existing rules into ~/.m-utils and apply all rules")
+        print("  [o] Override (reset UFW and apply only rules from ~/.m-utils)")
+        print("  [c] Cancel")
+        
+        while True:
+            choice = input("\nYour choice [m/o/c]: ").strip().lower()
+            
+            if choice == "c":
+                print("\nCancelled. No changes made.")
+                sys.exit(0)
+            elif choice == "m":
+                print("\nMerging existing rules into config...")
+                merge_rules_to_config(existing_rules)
+                # Reload config after merge
+                config = load_config()
+                firewall_config = config.get("firewall", {})
+                rules = firewall_config.get("rules", [])
+                break
+            elif choice == "o":
+                print("\nProceeding with override...")
+                break
+            else:
+                print("Invalid choice. Please enter 'm', 'o', or 'c'.")
+    
+    print("\nApplying firewall configuration...")
+    print("=" * 50)
+    
+    # Set default policies
+    print("Setting default policies...")
+    run_command(["ufw", "default", "deny", "incoming"])
+    print("  ✓ Default incoming: deny")
+    run_command(["ufw", "default", "allow", "outgoing"])
+    print("  ✓ Default outgoing: allow")
+    
+    # Get current UFW status to check if enabled
+    ufw_status = get_ufw_status()
+    was_enabled = ufw_status["enabled"]
+    
+    # Disable UFW temporarily to reset rules
+    if was_enabled:
+        run_command(["ufw", "--force", "disable"])
+    
+    # Reset UFW to clear all rules
+    run_command(["ufw", "--force", "reset"])
+    
+    # Reapply default policies after reset
+    run_command(["ufw", "default", "deny", "incoming"])
+    run_command(["ufw", "default", "allow", "outgoing"])
+    
+    # Apply rules from config
+    print("\nApplying port rules...")
+    for rule in rules:
+        port = rule.get("port")
+        protocol = rule.get("protocol", "tcp")
+        action = rule.get("action", "allow")
+        comment = rule.get("comment", "")
+        
+        if port is None:
+            print("  ⚠ Skipping rule with no port specified", file=sys.stderr)
+            continue
+        
+        # Build UFW command
+        cmd = ["ufw"]
+        
+        if action == "limit":
+            cmd.append("limit")
+        else:
+            cmd.extend([action])
+        
+        # Handle port specification
+        port_str = str(port)
+        if protocol != "any":
+            cmd.append(f"{port_str}/{protocol}")
+        else:
+            cmd.append(port_str)
+        
+        # Add comment if provided
+        if comment:
+            cmd.extend(["comment", comment])
+        
+        try:
+            run_command(cmd)
+            comment_str = f" # {comment}" if comment else ""
+            print(f"  ✓ {action.upper()} {port_str}/{protocol}{comment_str}")
+        except subprocess.CalledProcessError as e:
+            print(f"  ✗ Failed to apply rule: {port_str}/{protocol}", file=sys.stderr)
+            print(f"    Error: {e.stderr}", file=sys.stderr)
+    
+    # Enable UFW
+    print("\nEnabling firewall...")
+    run_command(["ufw", "--force", "enable"])
+    print("  ✓ Firewall enabled")
+    
+    print("\n" + "=" * 50)
+    print("✓ Firewall configuration applied successfully!")
+
+
+def handle_firewall_status() -> None:
+    """Show current firewall status."""
+    # Note: status command needs sudo for full details
+    elevate_if_needed()
+    
+    if not check_ufw_installed():
+        print("Error: UFW is not installed. Install with: sudo apt install ufw", file=sys.stderr)
+        sys.exit(1)
+    
+    print("Firewall Status:")
+    print("=" * 50)
+    
+    # Get UFW status
+    result = run_command(["ufw", "status", "verbose"], check=False)
+    if result.returncode == 0:
+        print(result.stdout)
+    else:
+        print("Error: Unable to get firewall status", file=sys.stderr)
+        print(result.stderr, file=sys.stderr)
+        return
+    
+    # Show existing UFW rules count
+    existing_rules = parse_existing_ufw_rules()
+    if existing_rules:
+        print(f"\nActive UFW Rules: {len(existing_rules)} rule(s)")
+    
+    print("\nConfigured Rules (~/.m-utils):")
+    print("=" * 50)
+    
+    config = load_config()
+    firewall_config = config.get("firewall", {})
+    rules = firewall_config.get("rules", [])
+    
+    if rules:
+        for i, rule in enumerate(rules, 1):
+            port = rule.get("port")
+            protocol = rule.get("protocol", "tcp")
+            action = rule.get("action", "allow")
+            comment = rule.get("comment", "")
+            
+            comment_str = f" # {comment}" if comment else ""
+            print(f"{i}. {action.upper()} {port}/{protocol}{comment_str}")
+    else:
+        print("No rules configured in ~/.m-utils")
+    
+    print("\nTo modify rules, edit: ~/.m-utils")
+    print("Then run: m-utils firewall update")
+
+
+def handle_firewall_enable() -> None:
+    """Enable UFW firewall."""
+    elevate_if_needed()
+    
+    if not check_ufw_installed():
+        print("Error: UFW is not installed. Install with: sudo apt install ufw", file=sys.stderr)
+        sys.exit(1)
+    
+    print("Enabling firewall...")
+    run_command(["ufw", "--force", "enable"])
+    print("✓ Firewall enabled")
+
+
+def handle_firewall_disable() -> None:
+    """Disable UFW firewall."""
+    elevate_if_needed()
+    
+    if not check_ufw_installed():
+        print("Error: UFW is not installed. Install with: sudo apt install ufw", file=sys.stderr)
+        sys.exit(1)
+    
+    print("Disabling firewall...")
+    run_command(["ufw", "disable"])
+    print("✓ Firewall disabled")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Matt's system utility collection",
@@ -372,6 +757,16 @@ def main():
     set_parser.add_argument("action", choices=["sleep"], help="Action to perform")
     set_parser.add_argument("value", help="Value (delay in minutes, 0=immediate, false=disabled)")
     
+    # firewall command
+    firewall_parser = subparsers.add_parser("firewall", help="Manage UFW firewall configuration")
+    firewall_subparsers = firewall_parser.add_subparsers(dest="firewall_action")
+    
+    # firewall subcommands
+    firewall_subparsers.add_parser("status", help="Show current firewall status and rules")
+    firewall_subparsers.add_parser("update", help="Apply firewall rules from config file")
+    firewall_subparsers.add_parser("enable", help="Enable the firewall")
+    firewall_subparsers.add_parser("disable", help="Disable the firewall")
+    
     args = parser.parse_args()
     
     if not args.command:
@@ -394,6 +789,20 @@ def main():
                 remove_all_lid_configs()
             elif args.lid_action in ["battery", "ac"]:
                 handle_lid_close_set(args.lid_action, args.action, args.value)
+    
+    elif args.command == "firewall":
+        if not args.firewall_action:
+            firewall_parser.print_help()
+            sys.exit(1)
+        
+        if args.firewall_action == "status":
+            handle_firewall_status()
+        elif args.firewall_action == "update":
+            apply_firewall_rules()
+        elif args.firewall_action == "enable":
+            handle_firewall_enable()
+        elif args.firewall_action == "disable":
+            handle_firewall_disable()
 
 
 if __name__ == "__main__":

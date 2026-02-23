@@ -318,6 +318,31 @@ main() {
   print_header "$path_file"
   process_path_file "$path_file"
   
+  # Set up MUTILS_DOTFILES_DIR as a system-wide environment variable
+  echo "----------------------------------------"
+  echo "Configuring m-utils system environment..."
+  local dotfiles_dir="$SCRIPT_DIR"
+  local env_file="/etc/environment"
+  
+  # Add to /etc/environment for system-wide availability
+  if ! grep -q "MUTILS_DOTFILES_DIR" "$env_file" 2>/dev/null; then
+    echo "MUTILS_DOTFILES_DIR=\"$dotfiles_dir\"" >> "$env_file"
+    echo "✓ Added MUTILS_DOTFILES_DIR to /etc/environment"
+    echo "  Note: New shells will need to be started for this to take effect"
+  else
+    # Update existing value if different
+    local current_value=$(grep "MUTILS_DOTFILES_DIR" "$env_file" | cut -d'=' -f2- | tr -d '"')
+    if [ "$current_value" != "$dotfiles_dir" ]; then
+      sed -i "s|MUTILS_DOTFILES_DIR=.*|MUTILS_DOTFILES_DIR=\"$dotfiles_dir\"|" "$env_file"
+      echo "✓ Updated MUTILS_DOTFILES_DIR in /etc/environment"
+    else
+      echo "✓ MUTILS_DOTFILES_DIR already correctly set in /etc/environment"
+    fi
+  fi
+  
+  echo "  MUTILS_DOTFILES_DIR=$dotfiles_dir"
+  echo "  (System-wide environment variable)"
+  
   echo "System file copy process completed successfully."
 }
 

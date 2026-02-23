@@ -33,3 +33,5 @@ projects/*
 sys/tmp/*
 sys/src
 swap/
+
+.m-utils
