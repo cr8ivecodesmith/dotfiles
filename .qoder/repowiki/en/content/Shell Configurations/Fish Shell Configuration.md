@@ -5,17 +5,21 @@
 - [config.fish](file://.config/fish/config.fish)
 - [aliases.fish](file://.config/fish/conf.d/aliases.fish)
 - [fish_variables](file://.config/fish/fish_variables)
-- [nvm.fish](file://.config/fish/functions/nvm.fish)
 - [bass.fish](file://.config/fish/functions/bass.fish)
 - [__bass.py](file://.config/fish/functions/__bass.py)
-- [_nvm_index_update.fish](file://.config/fish/functions/_nvm_index_update.fish)
-- [_nvm_list.fish](file://.config/fish/functions/_nvm_list.fish)
-- [_nvm_version_activate.fish](file://.config/fish/functions/_nvm_version_activate.fish)
 - [fisher.fish](file://.config/fish/functions/fisher.fish)
 - [termux-config.fish](file://termux-config/.config/fish/config.fish)
 - [termux-aliases.fish](file://termux-config/.config/fish/conf.d/aliases.fish)
 - [termux-shell_rc_content.fish](file://termux-config/.config/fish/conf.d/shell_rc_content.fish)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Updated NVM management section to reflect complete overhaul from custom Fish functions to bass integration approach
+- Removed references to deprecated NVM-related functions (_nvm_index_update.fish, _nvm_list.fish, _nvm_version_activate.fish, _nvm_version_deactivate.fish)
+- Updated architecture diagrams to show new bass-based NVM implementation
+- Revised NVM configuration examples to demonstrate bass wrapper pattern
+- Enhanced cross-shell bridge documentation with practical NVM integration examples
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -30,12 +34,12 @@
 10. [Appendices](#appendices)
 
 ## Introduction
-This document explains the Fish shell configuration in this repository, focusing on modern shell features and an enhanced user experience. It covers Fish-specific architecture (universal variables, functions, and completions), a custom prompt with Unicode symbols and dynamic content, the alias and function ecosystem, interactive enhancements, and practical examples of autosuggestions, syntax highlighting, and theme integration. It also highlights Fish’s advantages over traditional shells, configuration best practices, and migration considerations from other environments.
+This document explains the Fish shell configuration in this repository, focusing on modern shell features and an enhanced user experience. It covers Fish-specific architecture (universal variables, functions, and completions), a custom prompt with Unicode symbols and dynamic content, the alias and function ecosystem, interactive enhancements, and practical examples of autosuggestions, syntax highlighting, and theme integration. It also highlights Fish's advantages over traditional shells, configuration best practices, and migration considerations from other environments.
 
 ## Project Structure
 The Fish configuration is organized under .config/fish with three primary areas:
 - Root configuration: global initialization, environment variables, PATH manipulation, and optional hooks
-- Functions: reusable logic for tasks like NVM management, plugin management, and bridging Bash utilities
+- Functions: reusable logic for tasks like plugin management, and bridging Bash utilities
 - Conf.d: modular aliases and interactive session setup
 - Universal variables: cross-session persisted variables
 
@@ -49,12 +53,8 @@ FN["functions/"]
 CMPL["completions/"]
 end
 subgraph "Functions"
-NVM["nvm.fish"]
 BASS["bass.fish"]
 PYB["__bass.py"]
-NUPD["_nvm_index_update.fish"]
-NLST["_nvm_list.fish"]
-NACT["_nvm_version_activate.fish"]
 FSH["fisher.fish"]
 end
 subgraph "Conf.d"
@@ -63,38 +63,26 @@ end
 CFG --> AL
 CFG --> UV
 CFG --> FN
-FN --> NVM
 FN --> BASS
 BASS --> PYB
-NVM --> NUPD
-NVM --> NLST
-NVM --> NACT
 CFG --> FSH
 CFG -. optional .-> CMPL
 ```
 
 **Diagram sources**
-- [.config/fish/config.fish](file://.config/fish/config.fish#L1-L168)
+- [.config/fish/config.fish](file://.config/fish/config.fish#L1-L179)
 - [.config/fish/fish_variables](file://.config/fish/fish_variables#L1-L5)
-- [.config/fish/functions/nvm.fish](file://.config/fish/functions/nvm.fish#L1-L238)
 - [.config/fish/functions/bass.fish](file://.config/fish/functions/bass.fish#L1-L30)
 - [.config/fish/functions/__bass.py](file://.config/fish/functions/__bass.py#L1-L141)
-- [.config/fish/functions/_nvm_index_update.fish](file://.config/fish/functions/_nvm_index_update.fish#L1-L21)
-- [.config/fish/functions/_nvm_list.fish](file://.config/fish/functions/_nvm_list.fish#L1-L15)
-- [.config/fish/functions/_nvm_version_activate.fish](file://.config/fish/functions/_nvm_version_activate.fish#L1-L5)
 - [.config/fish/functions/fisher.fish](file://.config/fish/functions/fisher.fish#L1-L241)
 - [.config/fish/conf.d/aliases.fish](file://.config/fish/conf.d/aliases.fish#L1-L148)
 
 **Section sources**
-- [.config/fish/config.fish](file://.config/fish/config.fish#L1-L168)
+- [.config/fish/config.fish](file://.config/fish/config.fish#L1-L179)
 - [.config/fish/fish_variables](file://.config/fish/fish_variables#L1-L5)
 - [.config/fish/conf.d/aliases.fish](file://.config/fish/conf.d/aliases.fish#L1-L148)
-- [.config/fish/functions/nvm.fish](file://.config/fish/functions/nvm.fish#L1-L238)
 - [.config/fish/functions/bass.fish](file://.config/fish/functions/bass.fish#L1-L30)
 - [.config/fish/functions/__bass.py](file://.config/fish/functions/__bass.py#L1-L141)
-- [.config/fish/functions/_nvm_index_update.fish](file://.config/fish/functions/_nvm_index_update.fish#L1-L21)
-- [.config/fish/functions/_nvm_list.fish](file://.config/fish/functions/_nvm_list.fish#L1-L15)
-- [.config/fish/functions/_nvm_version_activate.fish](file://.config/fish/functions/_nvm_version_activate.fish#L1-L5)
 - [.config/fish/functions/fisher.fish](file://.config/fish/functions/fisher.fish#L1-L241)
 
 ## Core Components
@@ -103,15 +91,13 @@ CFG -. optional .-> CMPL
 - Aliases and interactive functions: Streamlined navigation, file operations, and developer-centric helpers
 - Environment and PATH management: Consistent prepending/appending with safety checks
 - Optional hooks: Integration with direnv and other tools
-- Node version management: Full-featured NVM-like functionality with activation/deactivation
 - Plugin management: First-party plugin manager for Fish
 - Cross-shell bridge: Bass enables sourcing Bash-side exports and aliases into Fish
 
 **Section sources**
-- [.config/fish/config.fish](file://.config/fish/config.fish#L84-L168)
+- [.config/fish/config.fish](file://.config/fish/config.fish#L112-L179)
 - [.config/fish/fish_variables](file://.config/fish/fish_variables#L1-L5)
 - [.config/fish/conf.d/aliases.fish](file://.config/fish/conf.d/aliases.fish#L1-L148)
-- [.config/fish/functions/nvm.fish](file://.config/fish/functions/nvm.fish#L1-L238)
 - [.config/fish/functions/bass.fish](file://.config/fish/functions/bass.fish#L1-L30)
 - [.config/fish/functions/fisher.fish](file://.config/fish/functions/fisher.fish#L1-L241)
 
@@ -119,7 +105,7 @@ CFG -. optional .-> CMPL
 The Fish configuration composes modular pieces:
 - Global initialization sets environment variables, PATH, and optional hooks
 - Prompt functions compute dynamic segments and render Unicode glyphs
-- Functions encapsulate complex logic (NVM, plugin management, cross-shell bridging)
+- Functions encapsulate complex logic (plugin management, cross-shell bridging)
 - Conf.d files provide aliases and interactive session setup
 - Universal variables persist state across sessions
 
@@ -128,20 +114,13 @@ graph TB
 A["config.fish<br/>Global init, env, PATH, hooks"] --> B["Prompt functions<br/>OS icon, cwd, venv, VCS"]
 A --> C["Aliases & interactive functions<br/>Navigation, extraction, fzf, kill"]
 A --> D["Optional hooks<br/>direnv"]
-E["nvm.fish<br/>Install/use/list/uninstall"] --> F["_nvm_index_update.fish"]
-E --> G["_nvm_list.fish"]
-E --> H["_nvm_version_activate.fish"]
-I["bass.fish<br/>Bridge Bash exports/aliases"] --> J["__bass.py<br/>Env diff + alias parsing"]
-K["fisher.fish<br/>Plugin manager"] --> A
-L["fish_variables<br/>Universal vars"] --> A
+E["bass.fish<br/>Bridge Bash exports/aliases"] --> F["__bass.py<br/>Env diff + alias parsing"]
+G["fisher.fish<br/>Plugin manager"] --> A
+H["fish_variables<br/>Universal vars"] --> A
 ```
 
 **Diagram sources**
-- [.config/fish/config.fish](file://.config/fish/config.fish#L1-L168)
-- [.config/fish/functions/nvm.fish](file://.config/fish/functions/nvm.fish#L1-L238)
-- [.config/fish/functions/_nvm_index_update.fish](file://.config/fish/functions/_nvm_index_update.fish#L1-L21)
-- [.config/fish/functions/_nvm_list.fish](file://.config/fish/functions/_nvm_list.fish#L1-L15)
-- [.config/fish/functions/_nvm_version_activate.fish](file://.config/fish/functions/_nvm_version_activate.fish#L1-L5)
+- [.config/fish/config.fish](file://.config/fish/config.fish#L1-L179)
 - [.config/fish/functions/bass.fish](file://.config/fish/functions/bass.fish#L1-L30)
 - [.config/fish/functions/__bass.py](file://.config/fish/functions/__bass.py#L1-L141)
 - [.config/fish/functions/fisher.fish](file://.config/fish/functions/fisher.fish#L1-L241)
@@ -168,7 +147,7 @@ L["fish_variables<br/>Universal vars"] --> A
   - Unicode glyphs for icons and separators
 - Conditional formatting:
   - Environment detection influences prompt content and style
-  - VCS prompt integrates with Fish’s built-in VCS support
+  - VCS prompt integrates with Fish's built-in VCS support
 
 ```mermaid
 flowchart TD
@@ -220,44 +199,6 @@ Func-->>User : Status output
 **Section sources**
 - [.config/fish/conf.d/aliases.fish](file://.config/fish/conf.d/aliases.fish#L1-L148)
 
-### Node Version Management (NVM)
-- Features:
-  - Install/use/list/uninstall Node versions
-  - Automatic resolution of .nvmrc and .node-version
-  - Index update from a mirror with platform/architecture handling
-  - Activation/deactivation of versions in PATH and environment
-- Integration:
-  - Uses universal variables to track current version
-  - Supports silent mode and default version configuration
-
-```mermaid
-flowchart TD
-A["nvm install/use"] --> B{"Version provided?"}
-B --> |No| C["Read .nvmrc/.node-version"]
-B --> |Yes| D["Validate version"]
-C --> D
-D --> E{"Supported platform?"}
-E --> |No| Err["Error: unsupported OS"]
-E --> |Yes| F["Fetch and extract"]
-F --> G{"Activate?"}
-G --> |Yes| H["Prepend PATH + export version"]
-G --> |No| I["List/Uninstall only"]
-H --> End(["Done"])
-I --> End
-Err --> End
-```
-
-**Diagram sources**
-- [.config/fish/functions/nvm.fish](file://.config/fish/functions/nvm.fish#L58-L194)
-- [.config/fish/functions/_nvm_index_update.fish](file://.config/fish/functions/_nvm_index_update.fish#L1-L21)
-- [.config/fish/functions/_nvm_version_activate.fish](file://.config/fish/functions/_nvm_version_activate.fish#L1-L5)
-
-**Section sources**
-- [.config/fish/functions/nvm.fish](file://.config/fish/functions/nvm.fish#L1-L238)
-- [.config/fish/functions/_nvm_index_update.fish](file://.config/fish/functions/_nvm_index_update.fish#L1-L21)
-- [.config/fish/functions/_nvm_list.fish](file://.config/fish/functions/_nvm_list.fish#L1-L15)
-- [.config/fish/functions/_nvm_version_activate.fish](file://.config/fish/functions/_nvm_version_activate.fish#L1-L5)
-
 ### Cross-Shell Bridge (Bass)
 - Purpose: Import Bash exports and aliases into Fish
 - Mechanism:
@@ -265,19 +206,24 @@ Err --> End
   - Emits Fish-native set/unset commands and alias statements
 - Usage: Wrap Bash invocations to source environment and aliases into Fish
 
+**Updated** The NVM management system now uses bass to source the standard Bash NVM implementation directly, eliminating the need for custom Fish functions.
+
 ```mermaid
 sequenceDiagram
 participant Fish as "Fish"
 participant Bass as "bass.fish"
 participant Py as "__bass.py"
 participant Bash as "Bash"
-Fish->>Bass : bass <bash-command>
+participant NVM as "NVM (Bash)"
+Fish->>Bass : bass source $NVM_DIR/nvm.sh ';' nvm $argv
 Bass->>Py : Invoke with args
 Py->>Bash : Run eval + env reader
+Bash->>NVM : Source nvm.sh and execute commands
+NVM-->>Bash : Exported variables and aliases
 Bash-->>Py : New env + alias dump
 Py-->>Bass : Script with set/unset/alias
 Bass->>Fish : source temporary script
-Fish-->>Fish : Imported env and aliases
+Fish-->>Fish : Imported NVM functionality
 ```
 
 **Diagram sources**
@@ -285,6 +231,7 @@ Fish-->>Fish : Imported env and aliases
 - [.config/fish/functions/__bass.py](file://.config/fish/functions/__bass.py#L53-L121)
 
 **Section sources**
+- [.config/fish/config.fish](file://.config/fish/config.fish#L148-L167)
 - [.config/fish/functions/bass.fish](file://.config/fish/functions/bass.fish#L1-L30)
 - [.config/fish/functions/__bass.py](file://.config/fish/functions/__bass.py#L1-L141)
 
@@ -321,7 +268,7 @@ Commit --> End(["Done"])
 - PATH management: Safely appends/prepends directories with existence checks
 
 **Section sources**
-- [.config/fish/config.fish](file://.config/fish/config.fish#L112-L168)
+- [.config/fish/config.fish](file://.config/fish/config.fish#L112-L179)
 
 ### Termux-Specific Enhancements
 - Prompt and environment tailored for Termux
@@ -358,9 +305,6 @@ Fish-->>User : Confirmation output
 - Prompt depends on:
   - Fish built-ins for colors and VCS integration
   - External utilities for OS identification and working directory
-- NVM depends on:
-  - Mirror availability and platform detection
-  - Filesystem for version storage and PATH manipulation
 - Bass depends on:
   - Python interpreter presence
   - Bash compatibility for environment capture
@@ -372,73 +316,69 @@ Fish-->>User : Confirmation output
 graph LR
 Prompt["Prompt functions"] --> FishB["Fish built-ins"]
 Prompt --> Utils["External utils"]
-NVM["nvm.fish"] --> Mirror["Mirror index"]
-NVM --> FS["Filesystem"]
 Bass["bass.fish"] --> Py["Python"]
 Bass --> Bash["Bash"]
 Fisher["fisher.fish"] --> Net["Network"]
-Fisher --> FS
+Fisher --> FS["Filesystem"]
+NVM["NVM via Bass"] --> BashNVM["Bash NVM"]
+NVM --> Bass
 ```
 
 **Diagram sources**
 - [.config/fish/config.fish](file://.config/fish/config.fish#L84-L109)
-- [.config/fish/functions/nvm.fish](file://.config/fish/functions/nvm.fish#L58-L194)
 - [.config/fish/functions/bass.fish](file://.config/fish/functions/bass.fish#L1-L30)
 - [.config/fish/functions/fisher.fish](file://.config/fish/functions/fisher.fish#L79-L115)
 
 **Section sources**
-- [.config/fish/config.fish](file://.config/fish/config.fish#L84-L168)
-- [.config/fish/functions/nvm.fish](file://.config/fish/functions/nvm.fish#L1-L238)
+- [.config/fish/config.fish](file://.config/fish/config.fish#L84-L179)
 - [.config/fish/functions/bass.fish](file://.config/fish/functions/bass.fish#L1-L30)
 - [.config/fish/functions/fisher.fish](file://.config/fish/functions/fisher.fish#L1-L241)
 
 ## Performance Considerations
 - Minimize external calls in prompt: Heavy commands (e.g., VCS queries) should be cached or short-circuited when possible
-- Prefer precomputed or cached indices for NVM mirrors to reduce network overhead
 - Use universal variables sparingly; keep only essential cross-session state
 - Avoid repeated filesystem scans in aliases and functions; cache results when safe
-- Use Fish’s built-in color and string utilities to reduce subprocess usage
-
-[No sources needed since this section provides general guidance]
+- Use Fish's built-in color and string utilities to reduce subprocess usage
+- Bass-based NVM integration eliminates redundant Fish function overhead by leveraging optimized Bash implementations
 
 ## Troubleshooting Guide
 - Prompt rendering issues:
   - Verify terminal supports 256-color and Unicode glyphs
   - Check that Fish color sequences are supported by the terminal
-- NVM failures:
-  - Confirm mirror availability and network connectivity
-  - Ensure version directories exist and permissions are correct
 - Bass errors:
   - Ensure Python is available and executable
   - Validate that Bash is installed and compatible
 - Fisher conflicts:
   - Remove or relocate conflicting plugin files before re-install
   - Re-run update to reconcile fish_plugins
+- NVM issues with bass integration:
+  - Verify NVM installation exists at $HOME/.nvm/nvm.sh
+  - Ensure bash compatibility and proper permissions
+  - Test manual sourcing: bass source $HOME/.nvm/nvm.sh
 
 **Section sources**
-- [.config/fish/config.fish](file://.config/fish/config.fish#L112-L168)
-- [.config/fish/functions/nvm.fish](file://.config/fish/functions/nvm.fish#L58-L194)
+- [.config/fish/config.fish](file://.config/fish/config.fish#L112-L179)
 - [.config/fish/functions/bass.fish](file://.config/fish/functions/bass.fish#L1-L30)
 - [.config/fish/functions/fisher.fish](file://.config/fish/functions/fisher.fish#L169-L173)
 
 ## Conclusion
-This Fish configuration demonstrates a modern, modular, and user-focused shell setup. It leverages Fish-specific strengths—functions, universal variables, and a powerful plugin ecosystem—while integrating cross-shell capabilities and environment management. The prompt is expressive and informative, aliases streamline daily tasks, and interactive enhancements improve productivity. The included Termux configuration shows how to tailor the setup for mobile and containerized environments.
-
-[No sources needed since this section summarizes without analyzing specific files]
+This Fish configuration demonstrates a modern, modular, and user-focused shell setup. It leverages Fish-specific strengths—functions, universal variables, and a powerful plugin ecosystem—while integrating cross-shell capabilities through bass. The prompt is expressive and informative, aliases streamline daily tasks, and interactive enhancements improve productivity. The recent NVM overhaul showcases best practices for integrating external tools through bass rather than maintaining custom wrappers. The included Termux configuration shows how to tailor the setup for mobile and containerized environments.
 
 ## Appendices
 
 ### Practical Examples
 - Autosuggestions and syntax highlighting:
-  - Enable Fish’s built-in autosuggestion and syntax highlighting in your terminal emulator
+  - Enable Fish's built-in autosuggestion and syntax highlighting in your terminal emulator
   - Use theme-aware aliases for tools like bat and fzf to maintain consistent visuals
 - Theme integration:
   - Align prompt colors with your terminal theme
-  - Use FZF’s configurable color options to match your palette
+  - Use FZF's configurable color options to match your palette
 - Migration tips:
   - Convert Bash aliases to Fish equivalents; note Fish uses ; for chaining and and instead of &&
   - Replace eval with source for Fish scripts
   - Use fisher to manage Fish plugins; keep a fish_plugins file for reproducibility
   - For Bash-dependent tools, wrap them with bass to import environment and aliases
-
-[No sources needed since this section provides general guidance]
+- NVM integration with bass:
+  - The configuration demonstrates a clean wrapper pattern: `function nvm; bass source $NVM_DIR/nvm.sh --no-use ';' nvm $argv; end`
+  - This approach leverages the mature Bash NVM implementation while maintaining Fish-native command syntax
+  - Automatic default version loading ensures consistent Node.js environment across sessions

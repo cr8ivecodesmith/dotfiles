@@ -20,11 +20,11 @@
 
 ## Update Summary
 **Changes Made**
-- Updated template-based configuration system documentation to reflect new .m-utils.template approach
-- Added new section covering automatic template creation during symlink initialization
-- Enhanced m-utils framework documentation with expanded environment variable management
-- Updated firewall configuration system documentation with new TOML-based approach
-- Revised architecture diagrams to show template-driven configuration flow
+- Enhanced template-based configuration system documentation to reflect automatic template creation during symlink initialization
+- Updated m-utils framework documentation with expanded environment variable management and TOML-based configuration
+- Revised architecture diagrams to show template-driven configuration flow with automatic user configuration generation
+- Added comprehensive coverage of TOML-based firewall configuration system
+- Updated troubleshooting guide with template creation and environment variable debugging procedures
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -41,7 +41,7 @@
 ## Introduction
 M-Utils System Management is a comprehensive dotfiles and system configuration management toolkit designed to streamline the setup and maintenance of development environments across Linux systems. The project provides automated tools for managing symbolic links, copying system files, rolling back changes, and configuring laptop power management behaviors.
 
-The system centers around an enhanced Python-based utility called `m-utils` that manages systemd integration, Polkit permissions, and delayed suspend functionality for laptops. It works alongside Bash scripts that handle dotfiles deployment and system-wide file management, creating a cohesive ecosystem for maintaining consistent development environments. The framework now features a template-based configuration system that replaces the previous manual configuration approach.
+The system centers around an enhanced Python-based utility called `m-utils` that manages systemd integration, Polkit permissions, and delayed suspend functionality for laptops. It works alongside Bash scripts that handle dotfiles deployment and system-wide file management, creating a cohesive ecosystem for maintaining consistent development environments. The framework now features a sophisticated template-based configuration system that automatically creates user configuration files from templates during initialization, with comprehensive environment variable support and fallback mechanisms.
 
 ## Project Structure
 The repository follows a modular structure optimized for system management and dotfiles deployment:
@@ -116,26 +116,28 @@ R --> T
 ### System File Management Scripts
 The system provides two primary scripts for managing system-level files:
 
-**init-system.sh**: Copies files from the dotfiles repository to their system destinations with intelligent conflict resolution and backup generation. It supports both interactive and batch modes, handles type mismatches, and preserves file attributes during copying. **Updated** Now includes system-wide environment variable management through `/etc/environment`.
+**init-system.sh**: Copies files from the dotfiles repository to their system destinations with intelligent conflict resolution and backup generation. It supports both interactive and batch modes, handles type mismatches, and preserves file attributes during copying. **Updated** Now includes system-wide environment variable management through `/etc/environment` with automatic MUTILS_DOTFILES_DIR configuration for global accessibility.
 
-**rollback-system.sh**: Reverses system file changes by restoring from timestamped backups. It supports selective restoration, date-based targeting, and dry-run previews for safe rollback operations.
+**rollback-system.sh**: Reverses system file changes by restoring from timestamped backups. It supports selective restoration, date-based targeting, and dry-run previews for safe rollback operations. **Enhanced** Includes cleanup of m-utils environment variables during rollback process.
 
 ### Dotfiles Management Scripts
-The dotfiles management system focuses on symbolic link creation and maintenance:
+The dotfiles management system focuses on symbolic link creation and maintenance with automatic template-based configuration:
 
-**init-symlinks.sh**: Creates symbolic links from the dotfiles repository to user home directories, with sophisticated handling for existing files, directories, and broken symlinks. **Enhanced** Now includes automatic template creation for m-utils configuration files using the `.m-utils-template` system.
+**init-symlinks.sh**: Creates symbolic links from the dotfiles repository to user home directories, with sophisticated handling for existing files, directories, and broken symlinks. **Enhanced** Now includes automatic template creation for m-utils configuration files using the `.m-utils-template` system during symlink initialization process.
 
 **rollback-symlinks.sh**: Restores dotfiles from timestamped backups, supporting individual file restoration, bulk operations, and selective targeting with date filters.
 
 ### Laptop Power Management Utility
-The `m-utils` Python script provides advanced laptop configuration capabilities with a new template-based configuration system:
+The `m-utils` Python script provides advanced laptop configuration capabilities with a comprehensive template-based configuration system:
 
 - **Delayed Suspend**: Configures systemd timers for delayed laptop lid closure
 - **Power Mode Management**: Handles both battery and AC power configurations
 - **Systemd Integration**: Manages logind.conf.d drop-in files and systemd timer units
 - **Polkit Permissions**: Works with PolicyKit rules for hibernation controls
-- **Template-Based Configuration**: Automatically creates user configuration files from templates
-- **Environment Variable Management**: Integrates with system-wide environment variables
+- **Template-Based Configuration**: Automatically creates user configuration files from TOML templates
+- **Environment Variable Management**: Integrates with system-wide environment variables via MUTILS_DOTFILES_DIR
+- **TOML Configuration Format**: Uses TOML for human-readable and machine-parsable configuration files
+- **Firewall Management**: Comprehensive UFW firewall configuration with TOML-based rule definitions
 
 **Section sources**
 - [init-system.sh](file://init-system.sh#L321-L346)
@@ -152,52 +154,64 @@ subgraph "User Interface Layer"
 A[Command Line Interface]
 B[Configuration Templates]
 C[System Environment Variables]
+D[TOML Configuration Files]
 end
 subgraph "Management Scripts"
-D[init-system.sh]
-E[rollback-system.sh]
-F[init-symlinks.sh]
-G[rollback-symlinks.sh]
+E[init-system.sh]
+F[rollback-system.sh]
+G[init-symlinks.sh]
+H[rollback-symlinks.sh]
 end
 subgraph "Utility Layer"
-H[m-utils Python Script]
-I[Template Manager]
-J[Environment Variable Manager]
-K[Polkit Rules]
-L[Systemd Integration]
+I[m-utils Python Script]
+J[Template Manager]
+K[Environment Variable Manager]
+L[Polkit Rules]
+M[Systemd Integration]
+N[TOML Parser]
+O[Firewall Manager]
 end
 subgraph "System Services"
-M[systemd-logind]
-N[PolicyKit Daemon]
-O[Systemd Timers]
-P[Environment Service]
+P[systemd-logind]
+Q[PolicyKit Daemon]
+R[Systemd Timers]
+S[Environment Service]
+T[UFW Firewall]
 end
 subgraph "Storage Layer"
-Q[Backup System]
-R[Dotfiles Repository]
-S[Template Files]
-T[System Paths File]
-U[Environment Variables]
+U[Backup System]
+V[Dotfiles Repository]
+W[Template Files]
+X[System Paths File]
+Y[Environment Variables]
+Z[Firewall Rules]
 end
-A --> D
-A --> F
-A --> H
-B --> H
-C --> H
-D --> Q
-F --> Q
-H --> I
-H --> J
-H --> K
-H --> L
-I --> S
-J --> U
-K --> N
-L --> M
-L --> O
+A --> E
+A --> G
+A --> I
+B --> I
+C --> I
+D --> I
+E --> U
+G --> U
+I --> J
+I --> K
+I --> L
+I --> M
+I --> N
+I --> O
+J --> W
+K --> Y
+L --> Q
 M --> P
-Q --> R
-Q --> T
+M --> R
+N --> D
+O --> T
+P --> S
+Q --> L
+R --> M
+U --> V
+U --> X
 ```
 
 **Diagram sources**
@@ -206,7 +220,7 @@ Q --> T
 - [init-symlinks.sh](file://init-symlinks.sh#L342-L365)
 - [49-allow-hibernate-sudoers.rules](file://system/etc/polkit-1/rules.d/49-allow-hibernate-sudoers.rules#L1-L17)
 
-The architecture implements a layered approach where user commands trigger scripts that manage system resources through appropriate privilege escalation mechanisms. The system maintains comprehensive backup capabilities and provides both interactive and automated operation modes. **Enhanced** with template-based configuration management and system-wide environment variable integration.
+The architecture implements a layered approach where user commands trigger scripts that manage system resources through appropriate privilege escalation mechanisms. The system maintains comprehensive backup capabilities and provides both interactive and automated operation modes. **Enhanced** with template-based configuration management, system-wide environment variable integration, and TOML-based configuration formats.
 
 **Section sources**
 - [m-utils](file://system/usr/bin/m-utils#L32-L42)
@@ -226,6 +240,10 @@ class MUtilsCLI {
 +laptop lid-close remove
 +laptop lid-close battery sleep [value]
 +laptop lid-close ac sleep [value]
++firewall status
++firewall update
++firewall enable
++firewall disable
 }
 class ConfigManager {
 +load_config() Dict
@@ -238,6 +256,8 @@ class TemplateManager {
 +load_template() Dict
 +validate_template() bool
 +TEMPLATE_FILE Path
++ENV_VAR_PRIORITY String
++FALLBACK_MECHANISM String
 }
 class LogindManager {
 +set_logind_setting(key, value) void
@@ -251,6 +271,12 @@ class TimerManager {
 +remove_all_lid_configs() void
 +TIMER_DIR Path
 }
+class FirewallManager {
++apply_firewall_rules() void
++parse_existing_ufw_rules() list
++merge_rules_to_config(rules) void
++check_ufw_installed() bool
+}
 class SystemChecker {
 +check_system_config_active() Dict
 +system_status Dict
@@ -259,9 +285,11 @@ MUtilsCLI --> ConfigManager : "manages"
 MUtilsCLI --> TemplateManager : "uses"
 MUtilsCLI --> LogindManager : "configures"
 MUtilsCLI --> TimerManager : "controls"
+MUtilsCLI --> FirewallManager : "manages"
 MUtilsCLI --> SystemChecker : "queries"
 ConfigManager --> TemplateManager : "creates from"
 LogindManager --> TimerManager : "coordinates"
+FirewallManager --> ConfigManager : "reads from"
 ```
 
 **Diagram sources**
@@ -373,40 +401,48 @@ The system employs a hierarchical configuration approach with template-based man
 graph LR
 subgraph "Configuration Sources"
 A[.m-utils-template File]
-B[.m-utils File]
+B[~/.m-utils TOML File]
 C[Logind Drop-in Files]
 D[Systemd Timer Units]
 E[Polkit Rules]
 F[MUTILS_DOTFILES_DIR]
+G[TOML Parser]
+H[Environment Variables]
 end
 subgraph "Runtime State"
-G[Active Configuration]
-H[System Status]
-I[Backup Records]
-J[Environment Variables]
+I[Active Configuration]
+J[System Status]
+K[Backup Records]
+L[Template Cache]
+M[Firewall Rules]
 end
 subgraph "Management Commands"
-K[Status Check]
-L[Apply Changes]
-M[Remove Configurations]
-N[Template Creation]
-O[Environment Setup]
+N[Status Check]
+O[Apply Changes]
+P[Remove Configurations]
+Q[Template Creation]
+R[Environment Setup]
+S[Firewall Apply]
 end
-A --> N
-N --> B
-B --> G
-F --> N
-G --> H
-H --> I
-J --> O
-O --> F
-K --> H
-L --> B
-L --> C
-L --> D
-M --> B
-M --> C
-M --> D
+A --> Q
+Q --> B
+B --> I
+F --> Q
+G --> B
+H --> R
+R --> F
+N --> I
+O --> B
+O --> C
+O --> D
+O --> S
+P --> B
+P --> C
+P --> D
+S --> M
+I --> J
+J --> K
+K --> L
 ```
 
 **Diagram sources**
@@ -421,17 +457,18 @@ M --> D
 
 ## Template-Based Configuration System
 
-**New** The m-utils framework now features a comprehensive template-based configuration system that replaces the previous manual configuration approach.
+**Enhanced** The m-utils framework now features a comprehensive template-based configuration system that automatically creates user configuration files from templates during initialization, with sophisticated environment variable support and fallback mechanisms.
 
 ### Template File Structure
 
-The `.m-utils-template` file serves as the foundation for user-specific configuration:
+The `.m-utils-template` file serves as the foundation for user-specific configuration with TOML format:
 
 ```mermaid
 classDiagram
 class TemplateFile {
 +header_comment : String
 +sections : List[Section]
++version : String
 }
 class Section {
 +name : String
@@ -448,6 +485,8 @@ class LaptopSection {
 }
 class FirewallSection {
 +rules : List[Rule]
++default_incoming : String
++default_outgoing : String
 }
 class Rule {
 +port : String|Int
@@ -499,14 +538,54 @@ end
 
 The m-utils script implements a flexible template loading system:
 
-**Environment Variable Priority**: Checks for `MUTILS_DOTFILES_DIR` environment variable first
-**Fallback Mechanism**: Falls back to relative path resolution if environment variable is not set
-**Automatic Creation**: Creates user configuration file if template exists but config doesn't
+**Environment Variable Priority**: Checks for `MUTILS_DOTFILES_DIR` environment variable first, providing system-wide accessibility
+**Fallback Mechanism**: Falls back to relative path resolution if environment variable is not set, ensuring script mobility
+**Automatic Creation**: Creates user configuration file if template exists but config doesn't, streamlining setup process
 
 **Section sources**
 - [.m-utils.template](file://.m-utils.template#L1-L77)
 - [m-utils](file://system/usr/bin/m-utils#L32-L42)
 - [init-system.sh](file://init-system.sh#L321-L346)
+
+### TOML-Based Firewall Configuration
+
+**New** The system now supports TOML-based firewall configuration with comprehensive rule management:
+
+```mermaid
+classDiagram
+class FirewallConfig {
++default_incoming : String
++default_outgoing : String
++rules : List[Rule]
+}
+class Rule {
++port : String|Int
++protocol : String
++action : String
++comment : String
+}
+class UFWManager {
++apply_rules() void
++parse_existing_rules() list
++merge_rules() void
++check_installed() bool
+}
+class ConfigLoader {
++load_toml() Dict
++save_toml(config) void
+}
+FirewallConfig --> Rule
+UFWManager --> FirewallConfig
+ConfigLoader --> FirewallConfig
+```
+
+**Diagram sources**
+- [m-utils](file://system/usr/bin/m-utils#L527-L652)
+- [.m-utils.template](file://.m-utils.template#L24-L77)
+
+**Section sources**
+- [m-utils](file://system/usr/bin/m-utils#L527-L652)
+- [.m-utils.template](file://.m-utils.template#L24-L77)
 
 ## Dependency Analysis
 
@@ -517,36 +596,44 @@ graph TB
 subgraph "Python Dependencies"
 A[tomli] --> B[m-utils]
 C[tomli_w] --> B
+D[argparse] --> B
+E[subprocess] --> B
 end
 subgraph "System Dependencies"
-D[systemd] --> E[systemd-logind]
-D --> F[Systemd Timers]
-G[PolicyKit] --> H[Polkit Daemon]
-I[Bash] --> J[Shell Scripts]
-K[TOML Parser] --> B
-L[Environment Variables] --> M[MUTILS_DOTFILES_DIR]
+F[systemd] --> G[systemd-logind]
+F --> H[Systemd Timers]
+I[PolicyKit] --> J[Polkit Daemon]
+K[Bash] --> L[Shell Scripts]
+M[TOML Parser] --> B
+N[Environment Variables] --> O[MUTILS_DOTFILES_DIR]
+P[UFW] --> Q[Uncomplicated Firewall]
 end
 subgraph "Configuration Dependencies"
-N[logind.conf.d] --> E
-O[systemd/system] --> F
-P[polkit-1/rules.d] --> H
-Q[.m-utils-template] --> B
-R[~/.m-utils] --> B
-S[/etc/environment] --> L
+R[logind.conf.d] --> G
+S[systemd/system] --> H
+T[polkit-1/rules.d] --> J
+U[.m-utils-template] --> B
+V[~/.m-utils] --> B
+W[/etc/environment] --> O
+X[TOML Files] --> B
+Y[Firewall Rules] --> P
 end
 subgraph "File Dependencies"
-T[Backup Files] --> U[Date Timestamped]
-V[Dotfiles Repository] --> W[Symbolic Links]
-X[System Paths] --> Y[File Copying]
-Z[Template Files] --> B
+Z[Backup Files] --> AA[Date Timestamped]
+AB[Dotfiles Repository] --> AC[Symbolic Links]
+AD[System Paths] --> AE[File Copying]
+AF[Template Files] --> B
+AG[Firewall Config] --> B
 end
 B --> D
-B --> G
-B --> K
-J --> D
-J --> G
-J --> I
-L --> S
+B --> F
+B --> I
+B --> M
+L --> F
+L --> I
+L --> K
+O --> W
+P --> Q
 ```
 
 **Diagram sources**
@@ -555,11 +642,12 @@ L --> S
 - [init-symlinks.sh](file://init-symlinks.sh#L342-L365)
 
 The dependency graph reveals a clean architecture where:
-- Python scripts depend on external libraries for configuration parsing (tomli/tomli_w)
+- Python scripts depend on external libraries for configuration parsing (tomli/tomli_w) and system interaction
 - Shell scripts rely on system services for file management and environment variable setup
 - Configuration files serve as the bridge between user preferences and system services
-- Template files provide standardized configuration blueprints
+- Template files provide standardized configuration blueprints with TOML format
 - Backup systems provide safety mechanisms for all operations
+- UFW firewall integration provides network security management
 
 **Section sources**
 - [m-utils](file://system/usr/bin/m-utils#L14-L29)
@@ -574,12 +662,14 @@ The system is designed with several performance optimizations:
 - Batch processing of path entries reduces I/O overhead
 - Intelligent skipping of unchanged files prevents unnecessary operations
 - **Enhanced** Template caching to avoid repeated file system access
+- **New** TOML parsing optimization for faster configuration loading
 
 ### Memory Management
 - Stream-based file processing prevents memory exhaustion with large files
 - Temporary arrays for backup discovery minimize memory footprint
 - Lazy evaluation of system status checks optimizes runtime performance
 - **New** Template validation caching for improved startup performance
+- **New** Firewall rule parsing cache for faster UFW operations
 
 ### Parallel Processing Opportunities
 The current implementation processes files sequentially, but could benefit from:
@@ -587,12 +677,14 @@ The current implementation processes files sequentially, but could benefit from:
 - Asynchronous backup generation
 - Parallel symlink creation for multiple targets
 - **New** Concurrent template processing for multiple users
+- **New** Parallel TOML configuration validation
 
 ### Storage Optimization
 - Timestamped backup naming prevents filesystem pollution
 - Selective restoration reduces disk usage during rollback operations
 - Compressed backup storage for large configuration sets
 - **New** Template-based configuration reduces duplication across users
+- **New** TOML format provides compact configuration storage
 
 ## Troubleshooting Guide
 
@@ -622,6 +714,17 @@ The current implementation processes files sequentially, but could benefit from:
 - **New** Verify `.m-utils-template` file exists in the dotfiles directory
 - Check `MUTILS_DOTFILES_DIR` environment variable is properly set
 - Ensure write permissions for user home directory
+- **New** Verify TOML format is valid in template file
+
+**Environment Variable Issues**
+- **New** Verify `/etc/environment` contains correct MUTILS_DOTFILES_DIR entry
+- Check that new shells are started to pick up environment changes
+- **New** Validate environment variable priority over template fallback
+
+**Firewall Configuration Problems**
+- **New** Ensure UFW is installed and enabled
+- Check TOML firewall rules syntax in configuration file
+- **New** Verify firewall rules are applied in correct order
 
 **Section sources**
 - [rollback-system.sh](file://rollback-system.sh#L31-L37)
@@ -637,6 +740,8 @@ The current implementation processes files sequentially, but could benefit from:
 4. **Review Backup Files**: Examine timestamped backups for restoration verification
 5. **Template Debugging**: **New** Check template loading with `m-utils --debug` flag
 6. **Environment Variables**: **New** Verify `MUTILS_DOTFILES_DIR` is set correctly
+7. **Firewall Debugging**: **New** Use `m-utils firewall status` to check UFW configuration
+8. **TOML Validation**: **New** Validate TOML syntax in configuration files
 
 ### Recovery Procedures
 
@@ -646,6 +751,8 @@ For complete system recovery:
 3. Restart affected services (systemd-logind, Polkit daemon)
 4. Verify configuration integrity with status commands
 5. **New** Recreate template-based configuration if corrupted
+6. **New** Rebuild firewall configuration from TOML template
+7. **New** Restart UFW service after firewall recovery
 
 **Section sources**
 - [rollback-system.sh](file://rollback-system.sh#L257-L325)
@@ -656,10 +763,12 @@ For complete system recovery:
 M-Utils System Management provides a comprehensive solution for maintaining consistent development environments across Linux systems. The toolkit successfully balances automation with safety through its robust backup systems, intelligent conflict resolution, and privilege-aware operations.
 
 **Major Enhancements**:
-- **Template-Based Configuration**: Revolutionary approach replacing manual configuration files
-- **Automatic Template Creation**: Streamlined setup process with automatic user configuration generation
-- **System-Wide Environment Variables**: Enhanced integration with `/etc/environment` for global accessibility
-- **Expanded Firewall Management**: TOML-based configuration system for UFW firewall rules
+- **Template-Based Configuration**: Revolutionary approach replacing manual configuration files with automatic template creation
+- **Automatic Template Creation**: Streamlined setup process with automatic user configuration generation during symlink initialization
+- **System-Wide Environment Variables**: Enhanced integration with `/etc/environment` for global accessibility via MUTILS_DOTFILES_DIR
+- **Expanded Firewall Management**: TOML-based configuration system for UFW firewall rules with comprehensive rule management
+- **TOML Configuration Format**: Human-readable and machine-parsable configuration files replacing JSON or YAML
+- **Sophisticated Template Loading**: Environment variable priority with fallback mechanisms for flexible deployment
 
 Key strengths of the system include:
 - **Modular Design**: Clear separation between system management and dotfiles handling
@@ -668,7 +777,9 @@ Key strengths of the system include:
 - **Flexible Operation**: Support for both interactive and automated workflows
 - **System Integration**: Deep integration with systemd, Polkit, and common Linux services
 - **Environment Management**: System-wide environment variable support for enhanced accessibility
+- **Network Security**: Integrated firewall management with TOML-based rule definitions
+- **Extensibility**: Modular architecture supports future enhancements and customizations
 
 The architecture demonstrates excellent engineering practices with proper error handling, configuration management, and extensibility for future enhancements. The combination of Python-based utilities and Bash scripting creates an efficient and maintainable system that scales across different deployment scenarios.
 
-Future enhancements could include parallel processing capabilities, enhanced monitoring features, expanded platform support, and additional template customization options for broader compatibility across Linux distributions.
+Future enhancements could include parallel processing capabilities, enhanced monitoring features, expanded platform support, and additional template customization options for broader compatibility across Linux distributions. The TOML-based configuration system provides a solid foundation for these future improvements while maintaining backward compatibility and ease of use.
