@@ -126,6 +126,35 @@ __venv_name() {
     return 1
 }
 
+__git_branch() {
+    if command -v git &> /dev/null; then
+        if git rev-parse --git-dir &>/dev/null 2>&1; then
+            local branch=$(git symbolic-ref --short HEAD 2>/dev/null || git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+            echo " ($branch)"
+            return 0
+        fi
+    fi
+}
+
+# Function to format prompt extras (venv, git) with proper spacing
+__prompt_extras() {
+    local venv=$(__venv_name)
+    local branch=$(__git_branch)
+    local result=""
+    
+    # Add venv with leading space if it exists
+    if [ -n "$venv" ]; then
+        result=" $venv"
+    fi
+    
+    # Add branch with leading space if it exists
+    if [ -n "$branch" ]; then
+        result="$result $branch"
+    fi
+    
+    echo "$result"
+}
+
 # Function to shorten path (similar to fish's prompt_pwd)
 __prompt_pwd() {
     local dir="${PWD/#$HOME/\~}"
@@ -180,13 +209,8 @@ if [ "$color_prompt" = yes ]; then
     
     # Line 1: [icon cwd] (venv) (git)
     PS1='${debian_chroot:+($debian_chroot)}'
-    PS1+="${Blue}[${Green}\$(\__distro_icon) ${Yellow}\$(\__prompt_pwd)${Blue}]${Reset} "
-    PS1+="${Blue}\$(\__venv_name)${Reset} "
-    
-    # Git status - check if we're in a git repo
-    if command -v git &> /dev/null; then
-        PS1+="${Blue}\$(git rev-parse --git-dir &>/dev/null && echo -n \" (\$(git symbolic-ref --short HEAD 2>/dev/null || git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD 2>/dev/null))\" || echo \"\")${Reset} "
-    fi
+    PS1+="${Blue}[${Green}\$(__distro_icon) ${Yellow}\$(__prompt_pwd)${Blue}]${Reset}"
+    PS1+="${Blue}\$(__prompt_extras)${Reset}"
     
     # Line 2: ❯ (Green in bash, Orange in fish)
     PS1+="\n${Bold}${Green}❯${Reset} "
