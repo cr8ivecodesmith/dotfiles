@@ -1,0 +1,391 @@
+#!/usr/bin/env python3
+"""
+m-utils: Matt's system utility collection
+A centralized script for managing system configurations and utilities.
+"""
+
+import argparse
+import os
+import sys
+import subprocess
+from pathlib import Path
+from typing import Dict, Any
+
+try:
+    import tomli
+    import tomli_w
+except ImportError:
+    print("Error: Required packages not installed.", file=sys.stderr)
+    print("Install with: pip install tomli tomli-w", file=sys.stderr)
+    sys.exit(1)
+
+
+CONFIG_FILE = Path.home() / ".m-utils"
+LOGIND_CONF = Path("/etc/systemd/logind.conf")
+LOGIND_CONF_D = Path("/etc/systemd/logind.conf.d")
+TIMER_DIR = Path("/etc/systemd/system")
+
+
+def load_config() -> Dict[str, Any]:
+    """Load configuration from TOML file."""
+    if not CONFIG_FILE.exists():
+        return {}
+    
+    with open(CONFIG_FILE, "rb") as f:
+        return tomli.load(f)
+
+
+def save_config(config: Dict[str, Any]) -> None:
+    """Save configuration to TOML file."""
+    with open(CONFIG_FILE, "wb") as f:
+        tomli_w.dump(config, f)
+
+
+def is_root() -> bool:
+    """Check if running as root."""
+    return os.geteuid() == 0
+
+
+def elevate_if_needed() -> None:
+    """Re-execute script with sudo if not running as root."""
+    if not is_root():
+        args = ["sudo", "-E", sys.executable] + sys.argv
+        os.execvp("sudo", args)
+
+
+def run_command(cmd: list, check: bool = True) -> subprocess.CompletedProcess:
+    """Run a shell command."""
+    return subprocess.run(cmd, check=check, capture_output=True, text=True)
+
+
+def restart_logind() -> None:
+    """Restart systemd-logind service."""
+    print("Restarting systemd-logind...")
+    run_command(["systemctl", "restart", "systemd-logind"])
+
+
+def set_logind_setting(key: str, value: str) -> None:
+    """Set a logind.conf setting using drop-in file."""
+    LOGIND_CONF_D.mkdir(parents=True, exist_ok=True)
+    dropin_file = LOGIND_CONF_D / "m-utils-lid.conf"
+    
+    # Read existing settings
+    settings = {}
+    if dropin_file.exists():
+        with open(dropin_file, "r") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    settings[k] = v
+    
+    # Update setting
+    settings[key] = value
+    
+    # Write back
+    with open(dropin_file, "w") as f:
+        f.write("[Login]\n")
+        for k, v in settings.items():
+            f.write(f"{k}={v}\n")
+
+
+def create_suspend_timer(power_mode: str, delay_minutes: int) -> None:
+    """Create a systemd timer to suspend after delay."""
+    service_name = f"m-utils-suspend-{power_mode}.service"
+    timer_name = f"m-utils-suspend-{power_mode}.timer"
+    
+    service_path = TIMER_DIR / service_name
+    timer_path = TIMER_DIR / timer_name
+    
+    # Create service unit
+    service_content = f"""[Unit]
+Description=M-Utils Delayed Suspend ({power_mode})
+After=suspend.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl suspend
+
+[Install]
+WantedBy=default.target
+"""
+    
+    with open(service_path, "w") as f:
+        f.write(service_content)
+    
+    # Create timer unit
+    timer_content = f"""[Unit]
+Description=M-Utils Delayed Suspend Timer ({power_mode})
+
+[Timer]
+OnActiveSec={delay_minutes}min
+RemainAfterElapse=no
+
+[Install]
+WantedBy=timers.target
+"""
+    
+    with open(timer_path, "w") as f:
+        f.write(timer_content)
+    
+    # Reload systemd
+    run_command(["systemctl", "daemon-reload"])
+
+
+def remove_suspend_timer(power_mode: str) -> None:
+    """Remove systemd timer for delayed suspend."""
+    service_name = f"m-utils-suspend-{power_mode}.service"
+    timer_name = f"m-utils-suspend-{power_mode}.timer"
+    
+    service_path = TIMER_DIR / service_name
+    timer_path = TIMER_DIR / timer_name
+    
+    # Stop and disable timer
+    run_command(["systemctl", "stop", timer_name], check=False)
+    run_command(["systemctl", "disable", timer_name], check=False)
+    
+    # Remove files
+    if service_path.exists():
+        service_path.unlink()
+    if timer_path.exists():
+        timer_path.unlink()
+    
+    # Reload systemd
+    run_command(["systemctl", "daemon-reload"])
+
+
+def remove_all_lid_configs() -> None:
+    """Remove all m-utils lid close configurations from the system."""
+    elevate_if_needed()
+    
+    print("Removing all m-utils lid close configurations...")
+    
+    # Remove logind drop-in file
+    dropin_file = LOGIND_CONF_D / "m-utils-lid.conf"
+    if dropin_file.exists():
+        dropin_file.unlink()
+        print(f"✓ Removed {dropin_file}")
+    else:
+        print("  No logind drop-in file found")
+    
+    # Remove timers for both power modes
+    for power_mode in ["battery", "ac"]:
+        service_name = f"m-utils-suspend-{power_mode}.service"
+        timer_name = f"m-utils-suspend-{power_mode}.timer"
+        
+        service_path = TIMER_DIR / service_name
+        timer_path = TIMER_DIR / timer_name
+        
+        removed_any = False
+        
+        # Stop and disable timer
+        result = run_command(["systemctl", "stop", timer_name], check=False)
+        if result.returncode == 0:
+            removed_any = True
+        
+        run_command(["systemctl", "disable", timer_name], check=False)
+        
+        # Remove files
+        if service_path.exists():
+            service_path.unlink()
+            removed_any = True
+        
+        if timer_path.exists():
+            timer_path.unlink()
+            removed_any = True
+        
+        if removed_any:
+            print(f"✓ Removed {power_mode} timer/service")
+    
+    # Reload systemd
+    run_command(["systemctl", "daemon-reload"])
+    
+    # Clear config file settings but keep the file
+    config = load_config()
+    if "laptop" in config and "lid_close" in config["laptop"]:
+        del config["laptop"]["lid_close"]
+        if not config["laptop"]:  # Remove empty laptop section
+            del config["laptop"]
+        save_config(config)
+        print("✓ Cleared settings from config file")
+    
+    restart_logind()
+    print("\n✓ All m-utils lid close configurations removed successfully!")
+    print("  System will now use default behavior.")
+
+
+def check_system_config_active() -> Dict[str, bool]:
+    """Check if m-utils configurations are actually active in the system."""
+    status = {"logind_dropin_exists": False, "battery_timer_exists": False, "ac_timer_exists": False}
+    
+    # Check logind drop-in
+    dropin_file = LOGIND_CONF_D / "m-utils-lid.conf"
+    status["logind_dropin_exists"] = dropin_file.exists()
+    
+    # Check timers
+    for power_mode in ["battery", "ac"]:
+        timer_name = f"m-utils-suspend-{power_mode}.timer"
+        timer_path = TIMER_DIR / timer_name
+        status[f"{power_mode}_timer_exists"] = timer_path.exists()
+    
+    return status
+
+
+def handle_lid_close_set(power_mode: str, action: str, value: str) -> None:
+    """Handle setting lid close behavior."""
+    elevate_if_needed()
+    
+    config = load_config()
+    if "laptop" not in config:
+        config["laptop"] = {}
+    if "lid_close" not in config["laptop"]:
+        config["laptop"]["lid_close"] = {}
+    
+    # Determine HandleLidSwitch key based on power mode
+    handle_key = f"HandleLidSwitch{'ExternalPower' if power_mode == 'ac' else ''}"
+    
+    if action == "sleep":
+        if value == "false":
+            # Disable sleep
+            set_logind_setting(handle_key, "ignore")
+            remove_suspend_timer(power_mode)
+            config["laptop"]["lid_close"][power_mode] = {"action": "sleep", "value": "false"}
+            print(f"Lid close on {power_mode}: disabled (ignore)")
+        
+        elif value == "0":
+            # Immediate sleep
+            set_logind_setting(handle_key, "suspend")
+            remove_suspend_timer(power_mode)
+            config["laptop"]["lid_close"][power_mode] = {"action": "sleep", "value": 0}
+            print(f"Lid close on {power_mode}: immediate suspend")
+        
+        else:
+            # Delayed sleep
+            try:
+                delay_minutes = int(value)
+                if delay_minutes < 0:
+                    print("Error: Delay must be non-negative", file=sys.stderr)
+                    sys.exit(1)
+                
+                set_logind_setting(handle_key, "ignore")
+                create_suspend_timer(power_mode, delay_minutes)
+                config["laptop"]["lid_close"][power_mode] = {"action": "sleep", "value": delay_minutes}
+                print(f"Lid close on {power_mode}: suspend after {delay_minutes} minutes")
+            
+            except ValueError:
+                print(f"Error: Invalid delay value: {value}", file=sys.stderr)
+                sys.exit(1)
+    
+    save_config(config)
+    restart_logind()
+    print("Configuration updated successfully!")
+
+
+def handle_lid_close_status() -> None:
+    """Show current lid close settings."""
+    config = load_config()
+    system_status = check_system_config_active()
+    
+    # Check if any m-utils configs are active
+    is_active = any(system_status.values())
+    
+    print("Laptop Lid Close Settings:")
+    print("=" * 50)
+    
+    if is_active:
+        print("Status: ✓ m-utils configuration ACTIVE")
+    else:
+        print("Status: ○ m-utils configuration INACTIVE (using system defaults)")
+    
+    print("=" * 50)
+    
+    for power_mode in ["battery", "ac"]:
+        settings = config.get("laptop", {}).get("lid_close", {}).get(power_mode)
+        
+        if settings:
+            action = settings.get("action")
+            value = settings.get("value")
+            
+            if action == "sleep":
+                if value == "false":
+                    status = "Disabled (do nothing)"
+                elif value == 0:
+                    status = "Immediate suspend"
+                else:
+                    status = f"Suspend after {value} minutes"
+            else:
+                status = "Unknown"
+        else:
+            status = "Not configured (system default)"
+        
+        print(f"{power_mode.upper():8s}: {status}")
+    
+    # Show system file status
+    if is_active:
+        print("\nSystem Files:")
+        print("-" * 50)
+        if system_status["logind_dropin_exists"]:
+            print("  ✓ Logind drop-in: /etc/systemd/logind.conf.d/m-utils-lid.conf")
+        if system_status["battery_timer_exists"]:
+            print("  ✓ Battery timer: /etc/systemd/system/m-utils-suspend-battery.timer")
+        if system_status["ac_timer_exists"]:
+            print("  ✓ AC timer: /etc/systemd/system/m-utils-suspend-ac.timer")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Matt's system utility collection",
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+    
+    # laptop command
+    laptop_parser = subparsers.add_parser("laptop", help="Laptop-specific utilities")
+    laptop_subparsers = laptop_parser.add_subparsers(dest="laptop_command")
+    
+    # laptop lid-close command
+    lid_parser = laptop_subparsers.add_parser("lid-close", help="Configure lid close behavior")
+    lid_subparsers = lid_parser.add_subparsers(dest="lid_action")
+    
+    # lid-close status
+    lid_subparsers.add_parser("status", help="Show current lid close settings")
+    
+    # lid-close remove
+    lid_subparsers.add_parser("remove", help="Remove all m-utils lid close configurations")
+    
+    # lid-close set (battery/ac)
+    set_parser = lid_subparsers.add_parser("battery", help="Configure battery power mode")
+    set_parser.add_argument("action", choices=["sleep"], help="Action to perform")
+    set_parser.add_argument("value", help="Value (delay in minutes, 0=immediate, false=disabled)")
+    
+    set_parser = lid_subparsers.add_parser("ac", help="Configure AC power mode")
+    set_parser.add_argument("action", choices=["sleep"], help="Action to perform")
+    set_parser.add_argument("value", help="Value (delay in minutes, 0=immediate, false=disabled)")
+    
+    args = parser.parse_args()
+    
+    if not args.command:
+        parser.print_help()
+        sys.exit(1)
+    
+    if args.command == "laptop":
+        if not args.laptop_command:
+            laptop_parser.print_help()
+            sys.exit(1)
+        
+        if args.laptop_command == "lid-close":
+            if not args.lid_action:
+                lid_parser.print_help()
+                sys.exit(1)
+            
+            if args.lid_action == "status":
+                handle_lid_close_status()
+            elif args.lid_action == "remove":
+                remove_all_lid_configs()
+            elif args.lid_action in ["battery", "ac"]:
+                handle_lid_close_set(args.lid_action, args.action, args.value)
+
+
+if __name__ == "__main__":
+    main()
