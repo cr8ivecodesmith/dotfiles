@@ -147,12 +147,23 @@ end
 
 #### NPM and NVM config
 if test -d $HOME/.npm-packages
-    set NPM_PACKAGES $HOME/.npm-packages
-    set PATH $NPM_PACKAGES/bin $PATH
+    set -gx NPM_PACKAGES $HOME/.npm-packages
+    set -gx PATH $NPM_PACKAGES/bin $PATH
 end
 
 if test -d $HOME/.nvm
-    set NVM_DIR $HOME/.nvm
+    set -gx NVM_DIR $HOME/.nvm
+    # Use bass to load bash nvm into fish (works with standard bash nvm)
+    if test -s "$NVM_DIR/nvm.sh"
+        # Define nvm function that wraps bass
+        function nvm
+            bass source $NVM_DIR/nvm.sh --no-use ';' nvm $argv
+        end
+        
+        # Auto-load nvm and activate default node version on shell startup
+        # This runs once when config.fish is sourced
+        bass source $NVM_DIR/nvm.sh ';' nvm use default --silent
+    end
 end
 
 
