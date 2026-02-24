@@ -84,8 +84,8 @@ endif
 
 
 " ##### BACKUP AND SWAP SETTINGS
-let g:_backup_home = $HOME . "/sys/src/backups/"
-let g:_swap_home = $HOME . "/sys/src/swap/"
+let g:_backup_home = $HOME . "/.config/nvim-workspace/backups/"
+let g:_swap_home = $HOME . "/.config/nvim-workspace/swap/"
 
 if !isdirectory(g:_backup_home)
     call mkdir(g:_backup_home, "p")
