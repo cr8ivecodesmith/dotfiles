@@ -319,7 +319,7 @@ do
 done
 
 # Define the paths you want to prepend
-paths_to_prepend=("$HOME/.local/bin" "$HOME/.cargo/bin")
+paths_to_prepend=("$HOME/.local/bin" "$HOME/.cargo/bin" "$HOME/.opencode/bin")
 
 # Loop over each path
 for path in "${paths_to_prepend[@]}"
