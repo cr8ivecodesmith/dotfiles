@@ -347,7 +347,7 @@ def handle_lid_close_status() -> None:
             value = settings.get("value")
             
             if action == "sleep":
-                if value == "false":
+                if value is False or value == "false":
                     status = "Disabled (do nothing)"
                 elif value == 0:
                     status = "Immediate suspend"
