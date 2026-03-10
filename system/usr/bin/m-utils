@@ -851,6 +851,11 @@ def handle_conserve_battery_status(model: str) -> None:
     print(f"Conservation mode:  {'✓ enabled (charging capped ~60-80%)' if mode_active else '○ disabled (charging to 100%)'}")
     print(f"Persistent service: {'✓ installed' if service_installed else '✗ not installed (setting will reset on reboot)'}")
 
+    if service_installed:
+        print("\nSystem Files:")
+        print("-" * 50)
+        print(f"  ✓ Service: {CONSERVATION_SERVICE_PATH}")
+
     if mode_active and not service_installed:
         print("\n⚠  Conservation mode is active but not persistent.")
         print("   Run 'enable' to make it survive reboots.")
