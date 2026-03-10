@@ -21,6 +21,18 @@
 # ac = { action = "sleep", value = false }    # Don't sleep on AC power
 
 
+[laptop.conserve_battery]
+# Battery conservation mode configuration (Lenovo laptops)
+# Limits charging to ~60-80% to extend long-term battery lifespan.
+# Managed via the ideapad_acpi kernel module sysfs interface.
+#
+# model = "lenovo"   # Set automatically on first use via --model flag
+#
+# To enable:  m-utils laptop conserve-battery enable --model lenovo
+# To disable: m-utils laptop conserve-battery disable
+# To check:   m-utils laptop conserve-battery status
+
+
 [firewall]
 # UFW Firewall configuration
 # Controls which ports are accessible for remote development and SSH access

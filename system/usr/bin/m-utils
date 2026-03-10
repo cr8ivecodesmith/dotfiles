@@ -726,6 +726,139 @@ def handle_firewall_disable() -> None:
     print("✓ Firewall disabled")
 
 
+CONSERVATION_SERVICE = "m-utils-battery-conservation.service"
+CONSERVATION_SERVICE_PATH = TIMER_DIR / CONSERVATION_SERVICE
+IDEAPAD_ACPI_DIR = Path("/sys/bus/platform/drivers/ideapad_acpi")
+
+
+def find_lenovo_device_id() -> Path:
+    """Find the ideapad_acpi sysfs device path for Lenovo conservation mode."""
+    if not IDEAPAD_ACPI_DIR.exists():
+        print("Error: ideapad_acpi driver directory not found.", file=sys.stderr)
+        print("  The 'ideapad_acpi' kernel module may not be loaded.", file=sys.stderr)
+        print("  Try: sudo modprobe ideapad_acpi", file=sys.stderr)
+        sys.exit(1)
+
+    # The driver dir contains device entries (e.g. VPC2004:00) alongside
+    # pseudo-files like 'bind', 'unbind', 'uevent'. We want the first subdir.
+    for entry in sorted(IDEAPAD_ACPI_DIR.iterdir()):
+        candidate = IDEAPAD_ACPI_DIR / entry.name / "conservation_mode"
+        if candidate.exists():
+            return candidate
+
+    print("Error: conservation_mode sysfs file not found under ideapad_acpi.", file=sys.stderr)
+    print(f"  Searched: {IDEAPAD_ACPI_DIR}", file=sys.stderr)
+    print("  Your Lenovo model may not support conservation mode via ideapad_acpi.", file=sys.stderr)
+    sys.exit(1)
+
+
+def resolve_conserve_model(model_arg) -> str:
+    """Return model from CLI arg (and persist it) or fall back to config."""
+    if model_arg is not None:
+        # Persist the chosen model so future calls don't need --model
+        config = load_config()
+        config.setdefault("laptop", {}).setdefault("conserve_battery", {})["model"] = model_arg
+        save_config(config)
+        return model_arg
+
+    config = load_config()
+    model = config.get("laptop", {}).get("conserve_battery", {}).get("model")
+    if not model:
+        print("Error: No laptop model configured.", file=sys.stderr)
+        print("  Pass --model on first use, e.g.:", file=sys.stderr)
+        print("    m-utils laptop conserve-battery status --model lenovo", file=sys.stderr)
+        sys.exit(1)
+    return model
+
+
+def handle_conserve_battery_enable(model: str) -> None:
+    """Enable battery conservation mode and install a systemd service for persistence."""
+    elevate_if_needed()
+
+    sysfs_path = find_lenovo_device_id()
+
+    # Apply immediately via sysfs
+    try:
+        sysfs_path.write_text("1\n")
+    except OSError as e:
+        print(f"Error: Could not write to sysfs: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    # Create systemd oneshot service for persistence across reboots
+    service_content = f"""[Unit]
+Description=M-Utils Lenovo Battery Conservation Mode
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "echo 1 > {sysfs_path}"
+
+[Install]
+WantedBy=multi-user.target
+"""
+    CONSERVATION_SERVICE_PATH.write_text(service_content)
+
+    run_command(["systemctl", "daemon-reload"])
+    run_command(["systemctl", "enable", "--now", CONSERVATION_SERVICE])
+
+    print("✓ Battery conservation mode enabled")
+    print(f"  Charge will be limited to ~60-80% (model: {model})")
+    print(f"  Persistent service installed: {CONSERVATION_SERVICE_PATH}")
+
+
+def handle_conserve_battery_disable(model: str) -> None:
+    """Disable battery conservation mode and remove the systemd service."""
+    elevate_if_needed()
+
+    sysfs_path = find_lenovo_device_id()
+
+    # Apply immediately via sysfs
+    try:
+        sysfs_path.write_text("0\n")
+    except OSError as e:
+        print(f"Error: Could not write to sysfs: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    # Remove systemd service if it exists
+    if CONSERVATION_SERVICE_PATH.exists():
+        run_command(["systemctl", "stop", CONSERVATION_SERVICE], check=False)
+        run_command(["systemctl", "disable", CONSERVATION_SERVICE], check=False)
+        CONSERVATION_SERVICE_PATH.unlink()
+        run_command(["systemctl", "daemon-reload"])
+        print(f"✓ Persistent service removed: {CONSERVATION_SERVICE_PATH}")
+
+    print("✓ Battery conservation mode disabled")
+    print(f"  Battery will now charge to 100% (model: {model})")
+
+
+def handle_conserve_battery_status(model: str) -> None:
+    """Show current conservation mode state and persistence status."""
+    elevate_if_needed()
+
+    sysfs_path = find_lenovo_device_id()
+
+    try:
+        raw = sysfs_path.read_text().strip()
+        mode_active = raw == "1"
+    except OSError as e:
+        print(f"Error: Could not read sysfs: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    service_installed = CONSERVATION_SERVICE_PATH.exists()
+
+    print("Battery Conservation Mode Status:")
+    print("=" * 50)
+    print(f"Model:              {model}")
+    print(f"Conservation mode:  {'✓ enabled (charging capped ~60-80%)' if mode_active else '○ disabled (charging to 100%)'}")
+    print(f"Persistent service: {'✓ installed' if service_installed else '✗ not installed (setting will reset on reboot)'}")
+
+    if mode_active and not service_installed:
+        print("\n⚠  Conservation mode is active but not persistent.")
+        print("   Run 'enable' to make it survive reboots.")
+    elif not mode_active and service_installed:
+        print("\n⚠  Service is installed but conservation mode is currently off.")
+        print("   This may indicate a conflict. Run 'disable' to clean up.")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Matt's system utility collection",
@@ -757,6 +890,34 @@ def main():
     set_parser.add_argument("action", choices=["sleep"], help="Action to perform")
     set_parser.add_argument("value", help="Value (delay in minutes, 0=immediate, false=disabled)")
     
+    # laptop conserve-battery command
+    conserve_parser = laptop_subparsers.add_parser(
+        "conserve-battery",
+        help="Control battery conservation mode (Lenovo: limits charge to preserve lifespan)"
+    )
+    conserve_subparsers = conserve_parser.add_subparsers(dest="conserve_action")
+
+    conserve_enable_parser = conserve_subparsers.add_parser(
+        "enable", help="Enable conservation mode (limits charge to preserve battery lifespan)"
+    )
+    conserve_enable_parser.add_argument(
+        "--model", choices=["lenovo"], help="Laptop model (saved to config on first use)"
+    )
+
+    conserve_disable_parser = conserve_subparsers.add_parser(
+        "disable", help="Disable conservation mode (allow charging to full capacity)"
+    )
+    conserve_disable_parser.add_argument(
+        "--model", choices=["lenovo"], help="Laptop model (saved to config on first use)"
+    )
+
+    conserve_status_parser = conserve_subparsers.add_parser(
+        "status", help="Show current conservation mode state"
+    )
+    conserve_status_parser.add_argument(
+        "--model", choices=["lenovo"], help="Laptop model (saved to config on first use)"
+    )
+
     # firewall command
     firewall_parser = subparsers.add_parser("firewall", help="Manage UFW firewall configuration")
     firewall_subparsers = firewall_parser.add_subparsers(dest="firewall_action")
@@ -789,7 +950,21 @@ def main():
                 remove_all_lid_configs()
             elif args.lid_action in ["battery", "ac"]:
                 handle_lid_close_set(args.lid_action, args.action, args.value)
-    
+
+        elif args.laptop_command == "conserve-battery":
+            if not args.conserve_action:
+                conserve_parser.print_help()
+                sys.exit(1)
+
+            model = resolve_conserve_model(getattr(args, "model", None))
+
+            if args.conserve_action == "enable":
+                handle_conserve_battery_enable(model)
+            elif args.conserve_action == "disable":
+                handle_conserve_battery_disable(model)
+            elif args.conserve_action == "status":
+                handle_conserve_battery_status(model)
+
     elif args.command == "firewall":
         if not args.firewall_action:
             firewall_parser.print_help()
