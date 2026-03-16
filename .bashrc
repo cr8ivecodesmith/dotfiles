@@ -306,7 +306,7 @@ fi
 
 ##### Update PATH
 # Define the paths you want to append
-paths_to_append=("/usr/sbin" "/sbin")
+paths_to_append=("$HOME/Projects/oss/llama.cpp/build/bin"  "/usr/sbin" "/sbin")
 
 # Loop over each path
 for path in "${paths_to_append[@]}"
@@ -364,3 +364,15 @@ if command -v direnv &> /dev/null; then
     eval "$(direnv hook bash)"
 fi
 
+
+#### LLAMA.CPP config
+if [ -d $HOME/.llama.cpp ]; then
+  export LLAMA_CACHE="$HOME/.llama.cpp"
+  export HF_HOME="$HOME/.llama.cpp"
+fi
+
+
+#### Intel OneAPI setup
+if [ -f /opt/intel/oneapi/setvars.sh ]; then
+    source /opt/intel/oneapi/setvars.sh >/dev/null 2>&1
+fi

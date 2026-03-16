@@ -122,7 +122,7 @@ set -gx DIRENV_LOG_FORMAT ""
 
 ##### Update PATH
 # Define the paths you want to append
-set paths_to_append /usr/sbin /sbin
+set paths_to_append $HOME/Projects/oss/llama.cpp/build/bin /usr/sbin /sbin
 
 # Loop over each path
 for path in $paths_to_append
@@ -175,4 +175,25 @@ set USE_GKE_GCLOUD_AUTH_PLUGIN True
 #### direnv hook
 if type -q direnv
     direnv hook fish | source
+end
+
+
+#### LLAMA.CPP config
+if test -d $HOME/.llama.cpp
+    set -gx LLAMA_CACHE $HOME/.llama.cpp
+    set -gx HF_HOME $HOME/.llama.cpp
+end
+
+
+#### Intel OneAPI setup
+# You will need `bass` installed to use this in fish, as the OneAPI setup scripts are written for
+# bash
+if test -d /opt/intel/oneapi
+    # Use bass to load bash OneAPI environment into fish
+    function oneapi
+        bass source /opt/intel/oneapi/setvars.sh >/dev/null 2>&1
+    end
+
+    # Auto-load OneAPI environment on shell startup (runs once when config.fish is sourced)
+    oneapi
 end
