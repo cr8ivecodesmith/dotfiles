@@ -304,34 +304,6 @@ if [ -f ~/sys/bin/load_ssh_identities ]; then
 fi
 
 
-##### Update PATH
-# Define the paths you want to append
-paths_to_append=("$HOME/Projects/oss/llama.cpp/build/bin"  "/usr/sbin" "/sbin")
-
-# Loop over each path
-for path in "${paths_to_append[@]}"
-do
-    # Check if the PATH already contains the current path
-    if [[ ! $PATH =~ (^|:)$path(:|$) ]]; then
-        # If not, append the path to the PATH variable
-        export PATH=$PATH:$path
-    fi
-done
-
-# Define the paths you want to prepend
-paths_to_prepend=("$HOME/.local/bin" "$HOME/.cargo/bin" "$HOME/.opencode/bin")
-
-# Loop over each path
-for path in "${paths_to_prepend[@]}"
-do
-    # Check if the PATH already contains the current path
-    if [[ ! $PATH =~ (^|:)$path(:|$) ]]; then
-        # If not, prepend the path to the PATH variable
-        export PATH=$path:$PATH
-    fi
-done
-
-
 ##### Google Cloud SDK config
 
 # New auth plugin for gcloud as of kube V1.26
@@ -347,7 +319,6 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 #### NPM config
 if [ -d $HOME/.npm-packages/bin ]; then
     export NPM_PACKAGES="$HOME/.npm-packages"
-    export PATH="$NPM_PACKAGES/bin:$PATH"
 fi
 
 
@@ -376,3 +347,75 @@ fi
 if [ -f /opt/intel/oneapi/setvars.sh ]; then
     source /opt/intel/oneapi/setvars.sh >/dev/null 2>&1
 fi
+
+
+#### ** KEEP THIS SECTION AT THE BOTTOM ** ####
+
+
+#### Update PYTHONPATH
+# Add any additional Python paths you need here, ensuring no duplicates
+
+python_paths=(
+  "$HOME/OpenVINO/ovms/lib/python"
+)
+
+for py_path in "${python_paths[@]}"
+do
+    if [ -d "$py_path" ] && [[ ! $PYTHONPATH =~ (^|:)$py_path(:|$) ]]; then
+        export PYTHONPATH=$PYTHONPATH:$py_path
+    fi
+done
+
+
+#### Update LD_LIBRARY_PATH
+# Add any additional library paths you need here, ensuring no duplicates
+
+library_paths=(
+  "$HOME/OpenVINO/ovms/lib"
+)
+
+for lib_path in "${library_paths[@]}"
+do
+    if [ -d "$lib_path" ] && [[ ! $LD_LIBRARY_PATH =~ (^|:)$lib_path(:|$) ]]; then
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$lib_path
+    fi
+done
+
+#### Update PATH
+# Add any additional library paths you need here, ensuring no duplicates
+
+# Define the paths you want to append
+paths_to_append=(
+  "$HOME/Projects/oss/llama.cpp/build/bin"
+  "$HOME/OpenVINO/ovms/bin"
+  "/usr/sbin"
+  "/sbin"
+)
+
+# Loop over each path
+for path in "${paths_to_append[@]}"
+do
+    # Check if the PATH exists and is already contained in the current path
+    if [ -d "$path" ] && [[ ! $PATH =~ (^|:)$path(:|$) ]]; then
+        # If not, append the path to the PATH variable
+        export PATH=$PATH:$path
+    fi
+done
+
+# Define the paths you want to prepend
+paths_to_prepend=(
+  "$HOME/.local/bin"
+  "$HOME/.cargo/bin"
+  "$HOME/.opencode/bin"
+  "$NPM_PACKAGES/bin"
+)
+
+# Loop over each path
+for path in "${paths_to_prepend[@]}"
+do
+    # Check if the PATH exists and is already contained in the current path
+    if [ -d "$path" ] && [[ ! $PATH =~ (^|:)$path(:|$) ]]; then
+        # If not, prepend the path to the PATH variable
+        export PATH=$path:$PATH
+    fi
+done

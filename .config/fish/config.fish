@@ -120,35 +120,9 @@ set -gx CONDA_CHANGEPS1 no
 set -gx DIRENV_LOG_FORMAT ""
 
 
-##### Update PATH
-# Define the paths you want to append
-set paths_to_append $HOME/Projects/oss/llama.cpp/build/bin /usr/sbin /sbin
-
-# Loop over each path
-for path in $paths_to_append
-    # Check if path exists and if the PATH already contains the current path
-    if test -d $path; and not contains $path $PATH
-        # If not, append the path to the PATH variable
-        set -gx PATH $PATH $path
-    end
-end
-
-set paths_to_prepend $HOME/.local/bin $HOME/.cargo/bin $HOME/.opencode/bin
-
-# Loop over each path
-for path in $paths_to_prepend
-    # Check if path exists and if the PATH already contains the current path
-    if test -d $path; and not contains $path $PATH
-        # If not, prepend the path to the PATH variable
-        set -gx PATH $path $PATH
-    end
-end
-
-
 #### NPM and NVM config
 if test -d $HOME/.npm-packages
     set -gx NPM_PACKAGES $HOME/.npm-packages
-    set -gx PATH $NPM_PACKAGES/bin $PATH
 end
 
 if test -d $HOME/.nvm
@@ -186,8 +160,6 @@ end
 
 
 #### Intel OneAPI setup
-# You will need `bass` installed to use this in fish, as the OneAPI setup scripts are written for
-# bash
 if test -d /opt/intel/oneapi
     # Use bass to load bash OneAPI environment into fish
     function oneapi
@@ -196,4 +168,67 @@ if test -d /opt/intel/oneapi
 
     # Auto-load OneAPI environment on shell startup (runs once when config.fish is sourced)
     oneapi
+end
+
+
+#### ** KEEP THIS SECTION AT THE BOTTOM ** ####
+
+#### Update PYTHONPATH
+# Add any additional Python paths you need here, ensuring no duplicates
+
+set python_paths \
+    $HOME/OpenVINO/ovms/lib/python
+
+for py_path in $python_paths
+    if test -d $py_path; and not contains $py_path $PYTHONPATH
+        set -gx PYTHONPATH $PYTHONPATH $py_path
+    end
+end
+
+
+#### Update LD_LIBRARY_PATH
+# Add any additional library paths you need here, ensuring no duplicates
+
+set library_paths \
+    $HOME/OpenVINO/ovms/lib
+
+for lib_path in $library_paths
+    if test -d $lib_path; and not contains $lib_path $LD_LIBRARY_PATH
+        set -gx LD_LIBRARY_PATH $LD_LIBRARY_PATH $lib_path
+    end
+end
+
+
+#### Update PATH
+# Add any additional Python paths you need here, ensuring no duplicates
+
+# Define the paths you want to append
+set paths_to_append \
+    $HOME/Projects/oss/llama.cpp/build/bin \
+    $HOME/OpenVINO/ovms/bin \
+    /usr/sbin \
+    /sbin
+
+# Loop over each path
+for path in $paths_to_append
+    # Check if path exists and if the PATH already contains the current path
+    if test -d $path; and not contains $path $PATH
+        # If not, append the path to the PATH variable
+        set -gx PATH $PATH $path
+    end
+end
+
+set paths_to_prepend \
+    $HOME/.local/bin \
+    $HOME/.cargo/bin \
+    $HOME/.opencode/bin \
+    $NPM_PACKAGES/bin
+
+# Loop over each path
+for path in $paths_to_prepend
+    # Check if path exists and if the PATH already contains the current path
+    if test -d $path; and not contains $path $PATH
+        # If not, prepend the path to the PATH variable
+        set -gx PATH $path $PATH
+    end
 end
