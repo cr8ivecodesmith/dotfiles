@@ -144,13 +144,17 @@ if !empty(glob(expand("~/.local/share/nvim/site/autoload")))
         Plug 'vim-airline/vim-airline'
         Plug 'vim-airline/vim-airline-themes'
         Plug 'airblade/vim-gitgutter'
-        Plug 'ctrlpvim/ctrlp.vim'
+        " Plug 'ctrlpvim/ctrlp.vim'
         Plug 'ervandew/supertab'
         Plug 'tmux-plugins/vim-tmux-focus-events'
         Plug 'tmhedberg/SimpylFold'
         Plug 'Konfekt/FastFold'
         Plug 'zhimsel/vim-stay'
         Plug 'sirtaj/vim-openscad'
+
+        Plug 'nvim-lua/plenary.nvim'
+        Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.x' }
+        Plug 'airblade/vim-rooter'
 
         Plug 'github/copilot.vim'
 
@@ -242,10 +246,10 @@ noremap <Leader>yy "+y
 " ##### END LEADER SHORTCUTS SETTINGS
 
 " ##### SPLIT SCREEN NAVIGATION (CTRL+hjkl)
-map <C-J> <C-W>j<C-W>_
-map <C-K> <C-W>k<C-W>_
-map <C-H> <C-W>h<C-W>_
-map <C-L> <C-W>l<C-W>_
+" map <C-J> <C-W>j<C-W>_
+" map <C-K> <C-W>k<C-W>_
+" map <C-H> <C-W>h<C-W>_
+" map <C-L> <C-W>l<C-W>_
 " ##### END SPLIT SCREEN NAVIGATION (CTRL+hjkl)
 
 " ##### TAB NAVIGATION
@@ -271,22 +275,47 @@ set laststatus=2
 " ##### END VIM THEME SETTINGS
 
 " ##### CTRLP PLUGIN SETTINGS
-if !empty(glob(expand("~/.local/share/nvim/plugged/ctrlp.vim")))
-    " Set keymapping
-    let g:ctrlp_map = '<c-p>'
-    let g:ctrlp_cmd = 'CtrlP'
-
-    " Configure ignored files
-    set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pid,__pycache__
-    let g:ctrlp_custom_ignore = {
-        \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-        \ 'file': '\v\.(exe|so|dll|pyc)$',
-        \ }
-
-    " Ignore files in .gitignore
-    let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
-endif
+" if !empty(glob(expand("~/.local/share/nvim/plugged/ctrlp.vim")))
+"     " Set keymapping
+"     let g:ctrlp_map = '<c-p>'
+"     let g:ctrlp_cmd = 'CtrlP'
+" 
+"     " Configure ignored files
+"     set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pid,__pycache__
+"     let g:ctrlp_custom_ignore = {
+"         \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+"         \ 'file': '\v\.(exe|so|dll|pyc)$',
+"         \ }
+" 
+"     " Ignore files in .gitignore
+"     let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+" endif
 " ##### END CTRLP PLUGIN SETTINGS
+
+" ##### TELESCOPE PLUGIN SETTINGS
+if !empty(glob(expand("~/.local/share/nvim/plugged/telescope.nvim")))
+    nnoremap <C-p> <cmd>Telescope find_files<cr>
+    nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+    nnoremap <leader>fb <cmd>Telescope buffers<cr>
+
+lua << EOF
+require('telescope').setup({
+  defaults = {
+    file_ignore_patterns = {
+      "%.pyc", "%.so", "%.dll", "%.exe",
+      "tmp/", "__pycache__/", "%.swp", "%.pid",
+    },
+  },
+  pickers = {
+    find_files = {
+      -- respects .gitignore via ripgrep
+      find_command = { "rg", "--files", "--hidden", "--glob", "!.git" },
+    },
+  },
+})
+EOF
+endif
+" ##### END TELESCOPE PLUGIN SETTINGS
 
 " ##### VIM-AIRLINE PLUGIN SETTINGS
 if !empty(glob(expand("~/.local/share/nvim/plugged/vim-airline")))

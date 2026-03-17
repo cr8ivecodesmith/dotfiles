@@ -18,6 +18,7 @@ log
 .local/share/nvim/shada/
 .local/share/nvim/site/
 .local/share/nvim/view/
+.local/share/nvim/telescope_history
 fish/conf.d
 fishd.*          # machine-specific universal variables
 fish_history     # command history
