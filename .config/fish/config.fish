@@ -120,6 +120,12 @@ set -gx CONDA_CHANGEPS1 no
 set -gx DIRENV_LOG_FORMAT ""
 
 
+#### devbox hook (keep this on top)
+if type -q devbox
+    eval (devbox global shellenv --preserve-path-stack -r | string collect)
+end
+
+
 #### NPM and NVM config
 if test -d $HOME/.npm-packages
     set -gx NPM_PACKAGES $HOME/.npm-packages
@@ -133,11 +139,16 @@ if test -d $HOME/.nvm
         function nvm
             bass source $NVM_DIR/nvm.sh --no-use ';' nvm $argv
         end
-        
         # Auto-load nvm and activate default node version on shell startup
         # This runs once when config.fish is sourced
         bass source $NVM_DIR/nvm.sh ';' nvm use default --silent
     end
+end
+
+
+#### FNM config (NPM alternative)
+if type -q fnm
+    fnm env --use-on-cd | source
 end
 
 

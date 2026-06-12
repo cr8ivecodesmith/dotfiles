@@ -2,5 +2,5 @@
 # Format: path relative to system/ folder
 # These will be copied to their absolute paths on the system
 
-usr/bin/m-utils
-etc/polkit-1/rules.d/49-allow-hibernate-sudoers.rules
+#usr/bin/m-utils
+#etc/polkit-1/rules.d/49-allow-hibernate-sudoers.rules

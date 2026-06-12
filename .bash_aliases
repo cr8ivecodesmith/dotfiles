@@ -193,3 +193,7 @@ fkill() {
     done < "$tmpfile"
     rm -f "$tmpfile"
 }
+
+# vim
+alias vim='nvim'
+alias vi='nvim'

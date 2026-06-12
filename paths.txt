@@ -12,5 +12,3 @@
 
 .config/fish/
 
-.local/share/applications/tailscale-systray.desktop
-.local/share/icons/tailscale.png

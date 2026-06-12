@@ -303,6 +303,10 @@ if [ -f ~/sys/bin/load_ssh_identities ]; then
     source ~/sys/bin/load_ssh_identities
 fi
 
+#### devbox init (keep this on top)
+if command -v devbox &> /dev/null; then
+    eval "$(devbox global shellenv)"
+fi
 
 ##### Google Cloud SDK config
 
@@ -328,6 +332,12 @@ if [ -d $HOME/.nvm ]; then
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 fi
+
+
+#### FNM config (NPM alternative)
+if command -v fnm &> /dev/null; then
+    eval "$(fnm env --use-on-cd --shell bash)"
+end
 
 
 #### direnv hook

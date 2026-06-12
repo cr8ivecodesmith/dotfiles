@@ -145,3 +145,6 @@ alias preview 'fzf --preview "bat --color=always --style=numbers --theme OneHalf
 alias fnvim 'nvim (fzf -m --preview "bat --color=always --style=numbers --theme OneHalfDark {}" --preview-window=down)'
 alias fvim 'vim (fzf -m --preview "bat --color=always --style=numbers --theme OneHalfDark {}" --preview-window=down)'
 
+## vim
+alias vim='nvim'
+alias vi='nvim'
