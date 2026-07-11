@@ -48,12 +48,12 @@ if [ -x /usr/bin/dircolors ]; then
     
     # Use eza if available, otherwise fallback to ls
     if command -v eza &> /dev/null; then
-        alias ls='eza --icons'
-        alias la='eza --icons -lgha --group-directories-first'
-        alias ll='eza --icons -lgh --group-directories-first'
-        alias l='eza --icons'
-        alias lt='eza --icons --tree'
-        alias lta='eza --icons --tree -lgha'
+        alias ls='eza --icons auto'
+        alias la='eza --icons auto -lgha --group-directories-first'
+        alias ll='eza --icons auto -lgh --group-directories-first'
+        alias l='eza --icons auto'
+        alias lt='eza --icons auto --tree'
+        alias lta='eza --icons auto --tree -lgha'
     else
         alias ls='ls --color=auto'
         alias ll='ls -alFh'

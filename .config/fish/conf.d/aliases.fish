@@ -19,10 +19,10 @@ alias ..... 'cd ../../../..'
 alias largefile 'du -h -x -s -- * | sort -r -h | head -20'
 
 # System Info
-alias ls 'eza --icons'
-alias la 'eza --icons -lgha --group-directories-first'
-alias lt 'eza --icons --tree'
-alias lta 'eza --icons --tree -lgha'
+alias ls 'eza --icons auto'
+alias la 'eza --icons auto -lgha --group-directories-first'
+alias lt 'eza --icons auto --tree'
+alias lta 'eza --icons auto --tree -lgha'
 
 alias psu 'ps aux'
 alias psg 'ps aux | grep -i'
