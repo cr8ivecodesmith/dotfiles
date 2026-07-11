@@ -305,7 +305,11 @@ fi
 
 #### devbox init (keep this on top)
 if command -v devbox &> /dev/null; then
-    eval "$(devbox global shellenv)"
+    __devbox_env="$(SHELL=/bin/bash devbox global shellenv 2>/dev/null)"
+    if [ -n "$__devbox_env" ] && bash -n <<< "$__devbox_env" 2>/dev/null; then
+        eval "$__devbox_env"
+    fi
+    unset __devbox_env
 fi
 
 ##### Google Cloud SDK config
@@ -337,7 +341,7 @@ fi
 #### FNM config (NPM alternative)
 if command -v fnm &> /dev/null; then
     eval "$(fnm env --use-on-cd --shell bash)"
-end
+fi
 
 
 #### direnv hook
@@ -429,3 +433,4 @@ do
         export PATH=$path:$PATH
     fi
 done
+
