@@ -418,6 +418,7 @@ paths_to_prepend=(
   "$HOME/.cargo/bin"
   "$HOME/.opencode/bin"
   "$NPM_PACKAGES/bin"
+  "/usr/local/cuda/bin"
 )
 
 # Loop over each path
