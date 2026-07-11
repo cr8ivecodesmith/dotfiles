@@ -122,7 +122,10 @@ set -gx DIRENV_LOG_FORMAT ""
 
 #### devbox hook (keep this on top)
 if type -q devbox
-    eval (devbox global shellenv --preserve-path-stack -r | string collect)
+    set -l devbox_env (env SHELL=(command -v fish) devbox global shellenv --preserve-path-stack -r | string collect)
+    if test -n "$devbox_env"; and echo $devbox_env | fish -n
+        eval $devbox_env
+    end
 end
 
 
