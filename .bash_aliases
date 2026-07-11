@@ -194,6 +194,7 @@ fkill() {
     rm -f "$tmpfile"
 }
 
-# vim
+# vim to nvim
 alias vim='nvim'
 alias vi='nvim'
+

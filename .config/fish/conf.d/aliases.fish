@@ -23,13 +23,22 @@ alias ls 'eza --icons'
 alias la 'eza --icons -lgha --group-directories-first'
 alias lt 'eza --icons --tree'
 alias lta 'eza --icons --tree -lgha'
-alias bat 'batcat --theme OneHalfDark'
-alias cat 'bat --theme OneHalfDark -p'
+
 alias psu 'ps aux'
 alias psg 'ps aux | grep -i'
 alias kill9 'kill -9'
 alias myip 'curl ifconfig.me'
 alias speedtest 'curl -s https://raw.githubusercontent.com/noreplyui5/speedtest-cli/master/speedtest.py | python'
+
+if type -q batcat &> /dev/null
+    alias bat 'batcat --theme OneHalfDark'
+    alias cat 'batcat --theme OneHalfDark -p'
+end
+
+if type -q bat &> /dev/null
+    alias bat 'bat --theme OneHalfDark'
+    alias cat 'bat --theme OneHalfDark -p'
+end
 
 # Magick
 alias listfont "convert -list font | grep -iE 'font:.*'"
@@ -145,6 +154,7 @@ alias preview 'fzf --preview "bat --color=always --style=numbers --theme OneHalf
 alias fnvim 'nvim (fzf -m --preview "bat --color=always --style=numbers --theme OneHalfDark {}" --preview-window=down)'
 alias fvim 'vim (fzf -m --preview "bat --color=always --style=numbers --theme OneHalfDark {}" --preview-window=down)'
 
-## vim
+## vim to nvim
 alias vim='nvim'
 alias vi='nvim'
+

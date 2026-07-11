@@ -75,9 +75,8 @@ let g:loaded_ruby_provider = 0
 let g:loaded_node_provider = 0
 
 " load language specific providers
-if !empty(glob(expand("~/.pyenv/versions/neovim/bin/python")))
-    " Ref: https://github.com/deoplete-plugins/deoplete-jedi/wiki/Setting-up-Python-for-Neovim#using-virtual-environments
-    let g:python3_host_prog = glob(expand('~/.pyenv/versions/neovim/bin/python'))
+if !empty(glob(expand("~/.venv/neovim/bin/python")))
+    let g:python3_host_prog = glob(expand('~/.venv/neovim/bin/python'))
 endif
 
 " ##### END GENERAL SETTINGS
@@ -156,11 +155,15 @@ if !empty(glob(expand("~/.local/share/nvim/site/autoload")))
         Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.x' }
         Plug 'airblade/vim-rooter'
 
+        Plug 'neovim/nvim-lspconfig'
+        Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+        " AI utils
+        "Plug 'ggml-org/llama.vim'
+        "Plug 'olimorris/codecompanion.nvim'
+        "Plug 'huggingface/llm.nvim'
+
         Plug 'github/copilot.vim'
-
-        " Note: Requires a running llama.cpp server
-        Plug 'ggml-org/llama.vim'
-
     call plug#end()
 endif
 
@@ -376,5 +379,70 @@ if !empty(glob(expand("~/.local/share/nvim/plugged/llama.vim")))
     " setting for now. Keep using the default endpoint: http://127.0.0.1:8012/infill
     " let g:llama_config.show_info = v:false
     " let g:llama_config.endpoint = 'http://127.0.0.1:7011/infill'
+
+    " Ollama Server default
+    let g:llama_config.endpoint = 'http://localhost:11434/infill'
 endif
 " ##### END LLAMA.VIM PLUGIN SETTINGS
+
+" ##### CODECOMPANION PLUGIN SETTINGS
+if !empty(glob(expand("~/.local/share/nvim/plugged/codecompanion.nvim")))
+lua << EOF
+require('codecompanion').setup({
+  adapters = {
+    http = {
+      ollama = function()
+        return require('codecompanion.adapters').extend('ollama', {
+          env = { url = 'http://localhost:11434' },
+          schema = {
+            model = { default = 'qwen2.5-coder:7b' },
+          },
+        })
+      end,
+    },
+  },
+  interactions = {
+    chat = { adapter = 'ollama' },
+    inline = { adapter = 'ollama' },
+  },
+})
+EOF
+
+nnoremap <leader>cc :CodeCompanionChat<CR>
+nnoremap <leader>ci :CodeCompanion<CR>
+vnoremap <leader>ca :CodeCompanionChat Add<CR>
+endif
+" ##### END CODECOMPANION PLUGIN SETTINGS
+
+" ##### LLM.NVIM PLUGIN SETTINGS
+if !empty(glob(expand("~/.local/share/nvim/plugged/llm.nvim")))
+lua << EOF
+require('llm').setup({
+  backend = "ollama",
+  model = "hf.co/ggml-org/Qwen2.5-Coder-1.5B-Q8_0-GGUF",
+  url = "http://localhost:11434",
+  request_body = {
+    options = {
+      temperature = 0.2,
+      top_p = 0.95,
+      num_predict = 32,
+    },
+  },
+  fim = {
+    enabled = true,
+    prefix = "<|fim_prefix|>",
+    middle = "<|fim_middle|>",
+    suffix = "<|fim_suffix|>",
+  },
+  tokens_to_clear = { "<|endoftext|>", "<|fim_pad|>" },
+  tokenizer = {
+    repository = "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+  },
+  context_window = 2048,
+  debounce_ms = 150,
+  accept_keymap = "<Tab>",
+  dismiss_keymap = "<S-Tab>",
+})
+EOF
+endif
+" ##### END LLM.NVIM PLUGIN SETTINGS
