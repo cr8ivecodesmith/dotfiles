@@ -363,6 +363,12 @@ if [ -f /opt/intel/oneapi/setvars.sh ]; then
 fi
 
 
+#### Lakan - LLAMA API config
+if [ -r "$HOME/.config/lakan/api_key" ]; then
+  export LAKAN_API_KEY="$(cat "$HOME/.config/lakan/api_key")"
+fi
+
+
 #### ** KEEP THIS SECTION AT THE BOTTOM ** ####
 
 

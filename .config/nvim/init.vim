@@ -159,7 +159,7 @@ if !empty(glob(expand("~/.local/share/nvim/site/autoload")))
         Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
         " AI utils
-        "Plug 'ggml-org/llama.vim'
+        Plug 'ggml-org/llama.vim'
         "Plug 'olimorris/codecompanion.nvim'
         "Plug 'huggingface/llm.nvim'
 
@@ -381,7 +381,13 @@ if !empty(glob(expand("~/.local/share/nvim/plugged/llama.vim")))
     " let g:llama_config.endpoint = 'http://127.0.0.1:7011/infill'
 
     " Ollama Server default
-    let g:llama_config.endpoint = 'http://localhost:11434/infill'
+    " let g:llama_config.endpoint = 'http://localhost:11434/infill'
+
+    " Lakan LLAMA server
+    let g:llama_config = get(g:, 'llama_config', {})
+    let g:llama_config.endpoint_fim = 'http://192.168.8.161:19199/infill'
+    let g:llama_config.model_fim = 'fim'
+    let g:llama_config.api_key = $LAKAN_API_KEY
 endif
 " ##### END LLAMA.VIM PLUGIN SETTINGS
 

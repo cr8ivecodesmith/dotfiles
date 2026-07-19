@@ -185,6 +185,12 @@ if test -d /opt/intel/oneapi
 end
 
 
+#### Lakan - LLAMA API config
+if test -r $HOME/.config/lakan/api_key
+    set -gx LAKAN_API_KEY (cat $HOME/.config/lakan/api_key)
+end
+
+
 #### ** KEEP THIS SECTION AT THE BOTTOM ** ####
 
 #### Update PYTHONPATH
