@@ -99,7 +99,7 @@ function fish_prompt
     set -l ven  (__venv_name)
 
     # Line 1:
-    echo -n $blue'['$orange$icon' '$yellow$cwd$blue']'$reset' '
+    echo -n $blue'['$orange$icon' '$host' '$yellow$cwd$blue']'$reset' '
     echo -n $blue$ven $reset
     echo -n $blue$vcs $reset
 

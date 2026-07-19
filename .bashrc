@@ -207,9 +207,9 @@ if [ "$color_prompt" = yes ]; then
     Reset='\[\033[0m\]'
     Bold='\[\033[1m\]'
     
-    # Line 1: [icon cwd] (venv) (git)
+    # Line 1: [icon host cwd] (venv) (git)
     PS1='${debian_chroot:+($debian_chroot)}'
-    PS1+="${Blue}[${Green}\$(__distro_icon) ${Yellow}\$(__prompt_pwd)${Blue}]${Reset}"
+    PS1+="${Blue}[${Green}\$(__distro_icon) \h ${Yellow}\$(__prompt_pwd)${Blue}]${Reset}"
     PS1+="${Blue}\$(__prompt_extras)${Reset}"
     
     # Line 2: ❯ (Green in bash, Orange in fish)
