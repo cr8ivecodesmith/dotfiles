@@ -369,6 +369,12 @@ if [ -r "$HOME/.config/lakan/api_key" ]; then
 fi
 
 
+#### HF token setup
+if [ -r "$HOME/.config/hf/token" ]; then
+  export HF_TOKEN="$(cat "$HOME/.config/hf/token")"
+fi
+
+
 #### ** KEEP THIS SECTION AT THE BOTTOM ** ####
 
 

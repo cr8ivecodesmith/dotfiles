@@ -191,6 +191,12 @@ if test -r $HOME/.config/lakan/api_key
 end
 
 
+#### HF token setup
+if test -r ~/.config/hf/token
+    set -gx HF_TOKEN (cat ~/.config/hf/token)
+end
+
+
 #### ** KEEP THIS SECTION AT THE BOTTOM ** ####
 
 #### Update PYTHONPATH
