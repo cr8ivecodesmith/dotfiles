@@ -359,7 +359,7 @@ fi
 
 #### Intel OneAPI setup
 if [ -f /opt/intel/oneapi/setvars.sh ]; then
-    source /opt/intel/oneapi/setvars.sh >/dev/null 2>&1
+  source /opt/intel/oneapi/setvars.sh >/dev/null 2>&1
 fi
 
 
@@ -369,9 +369,14 @@ if [ -r "$HOME/.config/lakan/api_key" ]; then
 fi
 
 
-#### HF token setup
+#### HF env setup
 if [ -r "$HOME/.config/hf/token" ]; then
   export HF_TOKEN="$(cat "$HOME/.config/hf/token")"
+fi
+
+# Force classic HTTP download by disabling XET
+if command -v hf &> /dev/null; then
+  export HF_HUB_DISABLE_XET=1
 fi
 
 

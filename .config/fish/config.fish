@@ -191,9 +191,14 @@ if test -r $HOME/.config/lakan/api_key
 end
 
 
-#### HF token setup
+#### HF env setup
 if test -r ~/.config/hf/token
     set -gx HF_TOKEN (cat ~/.config/hf/token)
+end
+
+# Force classic HTTP download by disabling XET
+if type -q hf
+    set -gx HF_HUB_DISABLE_XET 1
 end
 
 
